@@ -44,7 +44,7 @@
                                             // Register Low
 
 
-void (*PeriodicTask0)(void);   // user function
+static void (*PeriodicTask0)(void);   // user function
 
 // ***************** Timer0A_Init ****************
 // Activate Timer0A interrupts to run user task periodically
