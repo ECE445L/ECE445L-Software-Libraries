@@ -38,16 +38,17 @@ void Timer1_Init(void) {
 void DumpInit(void){
     /* TODO (EE445L Lab 2): complete this. */
 	
-	  // What should dump init do?
-	  // - reset the dump memory so we don't see old data.
-	  // - reset or start any timing required for our DumpTimeBuffer.
+	// What should dump init do?
+	// - reset the dump memory so we don't see old data.
+	// - reset or start any timing required for our DumpTimeBuffer.
 }
 
 void DumpCapture(uint32_t data){
     /* TODO (EE445L Lab 2): complete this. */
 	
     // Use TIMER1_TAR_R as current time.
-	  // Note: how do you deal with timer overflow?
+    // 
+	// Note: how do you deal with timer overflow?
 }
 
 uint32_t DumpCount(void){ 
@@ -66,18 +67,24 @@ uint32_t* DumpTime(void){
 void JitterInit(void){
     /* TODO (EE445L Lab 2): complete this. */
 	
-		// Note that jitter is independent of dump and should not 
-	  // share the same data structures. Create and reset your own 
-	  // variables indicating the measured jitter.
+	// Note that jitter is independent of dump and should not 
+	// share the same data structures. Create and reset your own 
+	// variables indicating the measured jitter.
 }
 
 void JitterMeasure(void){
     /* TODO (EE445L Lab 2): complete this. */
 	
-	  // We'll define the jitter we want to measure as "peak-to-peak" 
-	  // jitter or "cycle-to-cycle" jitter; this is the maximum time 
-	  // difference between any two periodic measurements.
-	  // Note: how do you deal with timer overflow?
+	// We'll define the jitter we want to measure as "peak-to-peak" 
+	// jitter or "cycle-to-cycle" jitter; this is the maximum time 
+	// difference between any two periodic measurements.
+    //
+    // We determine this by measuring the time of successive calls:
+    // on the first time called, JitterMeasure just measures current 
+    // time. On subsequent calls, JitterMeasure measures the elapsed time
+    // from previous calls.
+    // 
+	// Note: how do you deal with timer overflow?
 }
 
 uint32_t JitterGet(void){
