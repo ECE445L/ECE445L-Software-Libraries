@@ -50,7 +50,7 @@ void Scope(void){  // called 10k/sec
 //           1 Hz to 10 kHz
 //         priority is a number 0 to 6
 // Output: none
-void (*PeriodicTask2)(void);   // user function
+static void (*PeriodicTask2)(void);   // user function
 void PeriodicTask2_Init(void(*task)(void), 
   uint32_t busfrequency, uint32_t freq, uint8_t priority){long sr;
   if((freq == 0) || (freq > 10000)){
