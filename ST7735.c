@@ -2025,7 +2025,8 @@ void plotLineX(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t colo
   
   plotY = y1;
   
-  for(int32_t plotX = x1; plotX < x2; plotX++){
+  int32_t plotX;
+  for(plotX = x1; plotX < x2; plotX++){
     if(abs(dx) > abs(dy)){
       ST7735_DrawPixel(plotX, plotY, color);
       ST7735_DrawPixel(plotX, plotY+1, color);
@@ -2058,7 +2059,8 @@ void plotLineY(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t colo
   
   plotX = x1;
   
-  for(int32_t plotY = y1; plotY < y2; plotY++){
+  int32_t plotY;
+  for(plotY = y1; plotY < y2; plotY++){
     if(abs(dx) > abs(dy)){
       ST7735_DrawPixel(plotX, plotY, color);
       ST7735_DrawPixel(plotX, plotY+1, color);
