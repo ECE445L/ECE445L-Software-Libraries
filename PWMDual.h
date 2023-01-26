@@ -22,6 +22,7 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
+#pragma once
 
 // period is 16-bit number of PWM clock cycles in one period (3<=period)
 // PWM clock rate = processor clock rate/SYSCTL_RCC_PWMDIV

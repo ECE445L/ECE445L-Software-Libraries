@@ -5,6 +5,7 @@
 // and return the result.
 // Daniel Valvano
 // January 15, 2020
+#pragma once
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",

@@ -19,6 +19,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // SSI0Clk (SCLK, pin 4) connected to PA2
 // SSI0Fss (!CS, pin 2) connected to PA3

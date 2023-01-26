@@ -23,6 +23,7 @@
 
 #ifndef __TIMER2INTS_H__ // do not include more than once
 #define __TIMER2INTS_H__
+#include <stdint.h>
 
 // ***************** Timer2A_Init ****************
 // Activate Timer2 interrupts to run user task periodically

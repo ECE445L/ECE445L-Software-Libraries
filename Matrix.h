@@ -22,6 +22,7 @@ Copyright 2015 by Jonathan W. Valvano, valvano@mail.utexas.edu
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // PA5 connected to column 3 (keypad pin 4) using 10K pull-up
 // PA4 connected to column 2 (keypad pin 3) using 10K pull-up

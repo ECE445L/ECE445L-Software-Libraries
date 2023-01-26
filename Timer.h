@@ -37,6 +37,8 @@
 // J11Y Trigger/Echo2 to PB2 T3CCP0   ***used by OPT3101***
 // J12Y Trigger/Echo3 to PF4 T2CCP0 (not connected, no software for this)
 
+#pragma once
+
 
 // Subroutine to wait 10 usec
 // Inputs: None

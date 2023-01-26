@@ -20,6 +20,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // Max549 pin 1 ground
 // Max549 pin 2 OUTA

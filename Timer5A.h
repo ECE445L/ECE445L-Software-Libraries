@@ -20,6 +20,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 #include <stdint.h>
 // ***************** Timer5A_Init ****************
 // Activate Timer5 interrupts to run user task periodically

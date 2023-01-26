@@ -1,6 +1,7 @@
 // WifiSettings.h
 // Dung Nguyen
 // Wally Guzman
+#pragma once
 
 // Launchpad or TM4C123
 #define LAUNCHPAD 		1

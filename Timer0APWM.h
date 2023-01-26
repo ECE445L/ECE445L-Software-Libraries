@@ -29,6 +29,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // period is number of clock cycles in PWM period ((1/clockfreq) units)
 // high is number of clock cycles output is high ((1/clockfreq) units)

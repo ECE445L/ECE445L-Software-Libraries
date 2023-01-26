@@ -16,6 +16,7 @@
 
 
  ******************************************************************************/
+#pragma once
 
 /* This example accompanies the books
    "Embedded Systems: Introduction to ARM Cortex M Microcontrollers",

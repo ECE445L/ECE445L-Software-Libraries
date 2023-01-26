@@ -153,6 +153,7 @@
 // J2.14 nothing           {TM4C123 PB6, MSP432 P1.7}
 // J2.19 servo PWM         {TM4C123 PB2, MSP432 P2.5}
 // J4.34 gator hole switch {TM4C123 PC7, MSP432 P2.3}
+#pragma once
 
 //color constants                  red  grn  blu
 #define LCD_BLACK      0x0000   //   0,   0,   0

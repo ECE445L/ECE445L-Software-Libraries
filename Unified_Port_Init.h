@@ -1,3 +1,4 @@
+#pragma once
 // PORT-F  LaunchPAD switches and LEDS
 //
 #define PF0       (*((volatile uint32_t *)0x40025004))    // SW2

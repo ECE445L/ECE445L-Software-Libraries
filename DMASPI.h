@@ -23,6 +23,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // ************DMA_Init*****************
 // Initialize the buffer to port transfer, triggered by timer 5A

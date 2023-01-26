@@ -59,6 +59,8 @@
  http://users.ece.utexas.edu/~valvano/
  */
  
+#pragma once
+
 enum Direction{ BACKWARD, FORWARD, COAST};
 
 

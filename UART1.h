@@ -1,6 +1,7 @@
 //UART1.h
 //Dung Nguyen
 //Wally Guzman
+#pragma once
 
 #include <stdint.h> 
 

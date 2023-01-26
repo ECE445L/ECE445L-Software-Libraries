@@ -22,6 +22,7 @@
 //    block size and number of blocks
 // Jonathan Valvano
 // May 2, 2015
+#pragma once
 
 
 /* This example accompanies the book

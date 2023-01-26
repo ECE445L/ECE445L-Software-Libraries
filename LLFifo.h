@@ -20,6 +20,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 void Fifo_Init(void);
 

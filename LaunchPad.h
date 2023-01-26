@@ -23,7 +23,9 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
- #include <stdint.h>
+#pragma once
+
+#include <stdint.h>
 
 // negative logic built-in SW 1 connected to PF4
 // negative logic built-in SW 2 connected to PF0

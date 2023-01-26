@@ -20,6 +20,8 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
+#pragma once
+
 // Hardware LCD1030 from BG Micro (not tested):
 // gnd    =  1- AGM1264F ground
 // +5V    =  2- AGM1264F Vcc (with 0.1uF cap to ground)

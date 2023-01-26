@@ -31,6 +31,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
+#pragma once
 
 // The following pins were selected to be Profile pins:
 // J3.27/PE1 Profile 0

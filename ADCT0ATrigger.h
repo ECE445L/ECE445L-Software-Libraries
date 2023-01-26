@@ -5,6 +5,7 @@
 // is complete.
 // Daniel Valvano
 // Jan 5, 2020
+#pragma once
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
