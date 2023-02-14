@@ -1,19 +1,20 @@
 /**
- * @file TLV5616.c
+ * @file DAC.c
  * @author your name (you@domain.com)
- * @brief Low level driver for the TLV5616 12-bit SPI DAC.
+ * @brief Low level driver for the DAC. Documentation comments are specifically
+ *        for the TLV5618 12-bit SPI DAC. Modify for your particular DAC.
  * @version 0.3.0
  * @date 2023-02-14
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2023
  * @note Reference datasheet:
- *     https://www.ti.com/lit/ds/symlink/tlv5616.pdf?ts=1644622732627&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FTLV5616
+ *      https://www.ti.com/lit/ds/symlink/tlv5618a.pdf?ts=1676400608127&ref_url=https%253A%252F%252Fwww.google.com%252F
  */
 
-#include "./TLV5616.h"
+#include "./DAC.h"
 #include "./tm4c123gh6pm.h"
 
-int tlv5616_init() {
+int dac_init() {
     /**
      * Unified_Port_Init in Lab5.c calls Port_D_Init, which initializes the Port
      * D GPIOs for the appropriate alternate functionality (SSI).
@@ -27,7 +28,9 @@ int tlv5616_init() {
     return 1; // UNIMPLEMENTED
 }
 
-int tlv5616_output(uint16_t data) {
+int dac_output(uint16_t data) {
     // An example of how to send data via SSI is found in L534 of inc/ST7735.c.
+    // Remember that 4 out of the 16 bits is for DAC operation. The last 12 bits
+    // are for data. Read the datasheet! 
     return 1; // UNIMPLEMENTED
 }
