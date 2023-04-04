@@ -23,10 +23,10 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
+#include <stdint.h>
+
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
-#pragma once
-#include <stdint.h>
 
 // standard ASCII symbols
 #define CR   0x0D
@@ -118,3 +118,11 @@ void UART_OutUHex2(uint32_t number);
 // Output: Null terminated string
 // -- Modified by Agustinus Darmawan + Mingjie Qiu --
 void UART_InString(char *bufPt, uint16_t max);
+
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void Output_Init(void);
+

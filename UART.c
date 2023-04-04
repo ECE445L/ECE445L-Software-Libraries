@@ -31,7 +31,6 @@
 #include "../inc/UART.h"
 #include "../inc/tm4c123gh6pm.h"
 
-
 #define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
 #define UART_LCRH_WLEN_8        0x00000060  // 8 bit word length
@@ -250,6 +249,112 @@ char character;
   *bufPt = 0;
 }
 
+// Print a character to UART.
+int fputc(int ch, FILE *f){
+  if((ch == 10) || (ch == 13) || (ch == 27)){
+    UART_OutChar(13);
+    UART_OutChar(10);
+    return 1;
+  }
+  UART_OutChar(ch);
+  return 1;
+}
+// Get input from UART, echo
+int fgetc (FILE *f){
+  char ch = UART_InChar();  // receive from keyboard
+  UART_OutChar(ch);            // echo
+  return ch;
+}
+// Function called when file error occurs.
+int ferror(FILE *f){
+  /* Your implementation of ferror */
+  return EOF;
+}
+
 // Abstraction of general output device
 // Volume 2 section 3.4.5
-// Removed for ECE 445L due to ST7735 conflicts
+
+
+// Clear display
+void Output_Clear(void){ // Clears the display
+  // not implemented on the UART
+}
+// Turn off display (low power)
+void Output_Off(void){   // Turns off the display
+  // not implemented on the UART
+}
+// Turn on display
+void Output_On(void){    // Turns on the display
+  // not implemented on the UART
+}
+// set the color for future output
+void Output_Color(uint32_t newColor){ // Set color of future output 
+  // not implemented on the UART
+}
+
+
+#ifdef __TI_COMPILER_VERSION__
+	//Code Composer Studio Code
+#include "file.h"
+int uart_open(const char *path, unsigned flags, int llv_fd){
+  UART_Init();
+  return 0;
+}
+int uart_close( int dev_fd){
+	return 0;
+}
+int uart_read(int dev_fd, char *buf, unsigned count){char ch;
+  ch = UART_InChar();    // receive from keyboard
+  ch = *buf;         // return by reference
+  UART_OutChar(ch);  // echo
+  return 1;
+}
+int uart_write(int dev_fd, const char *buf, unsigned count){ unsigned int num=count;
+	while(num){
+		UART_OutChar(*buf);
+		buf++;
+		num--;
+	}
+	return count;
+}
+off_t uart_lseek(int dev_fd, off_t ioffset, int origin){
+	return 0;
+}
+int uart_unlink(const char * path){
+	return 0;
+}
+int uart_rename(const char *old_name, const char *new_name){
+	return 0;
+}
+
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 3 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit
+// Input: none
+// Output: none
+void Output_Init(void){int ret_val; FILE *fptr;
+  UART_Init();
+  ret_val = add_device("uart", _SSA, uart_open, uart_close, uart_read, uart_write, uart_lseek, uart_unlink, uart_rename);
+  if(ret_val) return; // error
+  fptr = fopen("uart","w");
+  if(fptr == 0) return; // error
+  freopen("uart:", "w", stdout); // redirect stdout to uart
+  setvbuf(stdout, NULL, _IONBF, 0); // turn off buffering for stdout
+
+}
+#else
+//Keil uVision Code
+//------------Output_Init------------
+// Initialize the Nokia5110
+// Input: none
+// Output: none
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void Output_Init(void){
+  UART_Init();
+}
+#endif
+
