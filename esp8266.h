@@ -24,6 +24,10 @@
 #define ESP8266_WIFI_MODE_AP                2
 #define ESP8266_WIFI_MODE_AP_AND_CLIENT     3
 
+
+void SetupWiFi(void);
+void Reset_8266(void);
+
 //-------------------ESP8266_Init --------------
 // Initializes the module
 // Inputs: RX and/or TX echo for debugging
