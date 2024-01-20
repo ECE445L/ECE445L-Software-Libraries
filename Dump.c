@@ -28,6 +28,10 @@ uint32_t MinElapsed;
 uint32_t MaxElapsed;
 uint32_t LastCallTime;
 
+//Determines how many samples to skip at the start, if any, when calculating Jitter
+#define JITTER_SKIP_COUNT 2
+#define JITTER_TRIG_VALUE (0xFFFFFFFF-JITTER_SKIP_COUNT)
+
 //Since some functions require the current time, we can setup a hardware timer to run
 void Timer1_Init(void) {
     volatile uint32_t delay;
@@ -106,10 +110,10 @@ void JitterMeasure(void){
     //Record the the current time at start of call
     uint32_t currTime = TIMER1_TAR_R;
 
-    if (MinElapsed == 0xFFFFFFFF){
+    if (MinElapsed > JITTER_TRIG_VALUE){
     
         // Technically reduces range of allowable periods compated to using a boolean flag
-        MinElapsed = 0xFFFFFFFE;
+        MinElapsed--;
 
     } else {
 
