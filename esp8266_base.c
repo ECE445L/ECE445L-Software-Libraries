@@ -63,10 +63,10 @@ char    mqtt_port[8]      = "1883";
 
 char    inchar;   
 
-void DelayWait10ms(uint32_t n) {
+void DelayWait1ms(uint32_t n) {
     uint32_t volatile time;
     while (n){
-        time = 727240 * 2 / 91;  // 10msec
+        time = 72724 * 2 / 91;  // ~1msec
         while (time){
             --time;
         }
@@ -77,9 +77,9 @@ void DelayWait10ms(uint32_t n) {
 void Reset_8266(void) 
 {
   PE1 = LOW;              // Reset the 8266
-  DelayWait10ms(500);     // Wait for 8266 to reset
+  DelayWait1ms(5000);     // Wait for 8266 to reset
   PE1 = BIT1;             // Enable the 8266
-  DelayWait10ms(500);     // Wait before setting up 8266
+  DelayWait1ms(5000);     // Wait before setting up 8266
   PE3 = LOW;              // Turn off LED
 
 }
@@ -105,7 +105,7 @@ void SetupWiFi(void)
     UART_OutString(".");
     #endif
     
-    DelayWait10ms(30);
+    DelayWait1ms(300);
   }
   
   UART5_OutString(eid);           // Student EID - Used for individualizing MQTT Topics
@@ -172,7 +172,7 @@ void SetupWiFi(void)
   ST7735_DrawString(0,8,"Exiting WiFI_Setup", ST7735_Color565(255, 0, 0 ));
  
   PE3 = BIT3;
-  //DelayWait10ms(700);
+  //DelayWait1ms(7000);
   
   #ifdef DEBUG1
   UART_OutString("Exiting WiFI_Setup routine\r\n");
