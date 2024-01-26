@@ -20,8 +20,8 @@
 #include "ST7735.h"
 #include "Clock.h"
 #include "PLL.h"
-#include "Timers.h"
-#include "UART2.h"
+
+#include "UART.h"
 #include "UART5.h"
 #include "esp8266.h"
 
@@ -114,7 +114,7 @@ void TM4C_to_MQTT(void){
 
   #ifdef DEBUG1
    UART_OutString("B2W: ");
-   UART_OutString(msg);         
+   UART_OutString(b2w_cmd);         
    UART_OutString("\r\n"); 
   #endif 
 }
