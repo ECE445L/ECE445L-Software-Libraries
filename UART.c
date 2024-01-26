@@ -249,6 +249,10 @@ char character;
   *bufPt = 0;
 }
 
+#ifdef UART_AS_GENERAL_OUTPUT
+// Abstraction of general output device
+// Volume 2 section 3.4.5
+
 // Print a character to UART.
 int fputc(int ch, FILE *f){
   if((ch == 10) || (ch == 13) || (ch == 27)){
@@ -271,10 +275,6 @@ int ferror(FILE *f){
   return EOF;
 }
 
-// Abstraction of general output device
-// Volume 2 section 3.4.5
-
-
 // Clear display
 void Output_Clear(void){ // Clears the display
   // not implemented on the UART
@@ -291,7 +291,7 @@ void Output_On(void){    // Turns on the display
 void Output_Color(uint32_t newColor){ // Set color of future output 
   // not implemented on the UART
 }
-
+#endif
 
 #ifdef __TI_COMPILER_VERSION__
 	//Code Composer Studio Code

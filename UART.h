@@ -36,6 +36,8 @@
 #define SP   0x20
 #define DEL  0x7F
 
+//#define UART_AS_GENERAL_OUTPUT
+
 
 //------------UART_Init------------
 // Initialize the UART for 115,200 baud rate (assuming 80 MHz clock),
