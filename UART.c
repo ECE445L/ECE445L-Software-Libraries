@@ -291,6 +291,39 @@ void Output_On(void){    // Turns on the display
 void Output_Color(uint32_t newColor){ // Set color of future output 
   // not implemented on the UART
 }
+
+#ifdef __TI_COMPILER_VERSION__
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 3 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit
+// Input: none
+// Output: none
+void Output_Init(void){int ret_val; FILE *fptr;
+  UART_Init();
+  ret_val = add_device("uart", _SSA, uart_open, uart_close, uart_read, uart_write, uart_lseek, uart_unlink, uart_rename);
+  if(ret_val) return; // error
+  fptr = fopen("uart","w");
+  if(fptr == 0) return; // error
+  freopen("uart:", "w", stdout); // redirect stdout to uart
+  setvbuf(stdout, NULL, _IONBF, 0); // turn off buffering for stdout
+
+}
+#else
+//Keil uVision Code
+//------------Output_Init------------
+// Initialize the Nokia5110
+// Input: none
+// Output: none
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void Output_Init(void){
+  UART_Init();
+}
+#endif
+
 #endif
 
 #ifdef __TI_COMPILER_VERSION__
@@ -325,36 +358,6 @@ int uart_unlink(const char * path){
 }
 int uart_rename(const char *old_name, const char *new_name){
 	return 0;
-}
-
-//------------Output_Init------------
-// Initialize the UART for 115,200 baud rate (assuming 3 MHz bus clock),
-// 8 bit word length, no parity bits, one stop bit
-// Input: none
-// Output: none
-void Output_Init(void){int ret_val; FILE *fptr;
-  UART_Init();
-  ret_val = add_device("uart", _SSA, uart_open, uart_close, uart_read, uart_write, uart_lseek, uart_unlink, uart_rename);
-  if(ret_val) return; // error
-  fptr = fopen("uart","w");
-  if(fptr == 0) return; // error
-  freopen("uart:", "w", stdout); // redirect stdout to uart
-  setvbuf(stdout, NULL, _IONBF, 0); // turn off buffering for stdout
-
-}
-#else
-//Keil uVision Code
-//------------Output_Init------------
-// Initialize the Nokia5110
-// Input: none
-// Output: none
-//------------Output_Init------------
-// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
-// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
-// Input: none
-// Output: none
-void Output_Init(void){
-  UART_Init();
 }
 #endif
 
