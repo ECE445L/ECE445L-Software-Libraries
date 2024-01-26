@@ -105,20 +105,18 @@ void Parser(void) {
 //
 // 
 void TM4C_to_MQTT(void){
-  char msp[24]  = ""; 
+  char b2w_cmd[24]  = ""; 
   
-  sprintf(msp, "%d", Mode_Value);             // Need to add other commands here
-   sprintf(msp + strlen(msp),",");     // Send dangling comma to terminate CSV
+  //TODO: Add other commands here
+  sprintf(b2w_cmd, "%d,\n", Mode_Value);  // Msg is comma seperated, and must end with '\n'          
   
-  UART5_OutString(msp);
-  UART5_OutChar('\n');      // Send NL to indicate EOT
+  UART5_OutString(b2w_cmd);      
 
   #ifdef DEBUG1
-   UART2_OutString("msp: ");
-   UART2_OutString(msp);         
-   UART2_Out_CRLF();  
+   UART_OutString("B2W: ");
+   UART_OutString(msg);         
+   UART_OutString("\r\n"); 
   #endif 
-   
 }
  
 // -------------------------   MQTT_to_TM4C  -----------------------------------
@@ -155,9 +153,9 @@ void MQTT_to_TM4C(void) {
         bufpos = 0;                         // Reset for next string
         
         #ifdef DEBUG1
-        UART2_OutString("W2B Command = ");
-        UART2_OutString(w2b_cmd);
-        UART2_Out_CRLF();
+          UART_OutString("W2B: ");
+          UART_OutString(w2b_cmd);
+          UART_OutString("\r\n");
         #endif
       } 
       
