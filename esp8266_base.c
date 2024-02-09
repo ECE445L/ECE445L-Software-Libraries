@@ -30,6 +30,7 @@
 //#undef DEBUG2               // Comment out to enable DEBUG2
 //#undef DEBUG3               // Comment out to enable DEBUG3
 
+
 #define UART5_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART5_FR_RXFE            0x00000010  // UART Receive FIFO Empty
 #define UART5_LCRH_WLEN_8        0x00000060  // 8 bit word length
@@ -54,12 +55,12 @@
 #define BIT2  0x4
 #define BIT3  0x8   
 
-char    eid[32]           = "add3338";       // Your EID goes here
-char    ssid[32]          = "PhoneRingRing";       // WiFi Access Point in the 445L Lab
-char    test[32]          = "sdsdsd";
-char    pass[32]          = "yeetyeet";
-char    mqtt_broker[32]   = "broker.emqx.io";           // MQTT Broker in EER 5.826
-char    mqtt_port[8]      = "1883";
+//#define SKIP_SETUP 0
+char    eid[32]           = "aa26646";           // Your EID goes here
+char    ssid[32]          = "HP Deskjet 2624";   // Your WiFi Access Point name goes here
+char    pass[32]          = "Desk26241130";			 // Your WiFi Access Point password goes here
+char    mqtt_broker[32]   = "broker.emqx.io";    // MQTT Broker
+char    mqtt_port[8]      = "1883";							 // MQTT Port (TCP/IP if applicable)
 
 char    inchar;   
 
@@ -91,6 +92,10 @@ void Reset_8266(void)
 
 void SetupWiFi(void) 
 { 
+	#ifdef SKIP_SETUP
+	  UART_OutString("\n");
+		return;
+	#endif
   
   #ifdef DEBUG1
   UART_OutString("\r\nIn WiFI_Setup routine\r\n");
@@ -149,34 +154,21 @@ void SetupWiFi(void)
     ST7735_DrawString(0,7,mqtt_port, ST7735_Color565(255, 0, 0 ));
     #endif
   
-  //
-  // This while loop receives debug info from the 8266 and optionally 
-  // sends it out the debug port. The loop exits once the RDY signal
-  // is deasserted and the serial port has no more character to xmit
-  //
-  /*
   while ((RDY) | ((UART5_FR_R & UART5_FR_RXFE) ==0)) { 
-    
-    if ((UART5_FR_R & UART5_FR_RXFE) ==0 ) 
-    {
+    if ((UART5_FR_R & UART5_FR_RXFE) ==0 ){
         inchar =(UART5_DR_R & 0xFF);      
-    #ifdef DEBUG1
+			#ifdef DEBUG1
         UART_OutChar(inchar);                        // Output received character
-    #endif
-    }
-    else if ((UART5_FR_R&UART5_FR_RXFE) !=0 ) { }     // Do nothing
-    
+			#endif
+    } else {
+			ST7735_DrawString(0,8,"waiting", ST7735_Color565(200, 0, 0 ));
+		}
   }
-  */
-
   ST7735_DrawString(0,8,"Exiting WiFI_Setup", ST7735_Color565(255, 0, 0 ));
- 
   PE3 = BIT3;
-  //DelayWait1ms(7000);
   
   #ifdef DEBUG1
-  UART_OutString("Exiting WiFI_Setup routine\r\n");
-  
+    UART_OutString("Exiting WiFI_Setup routine\r\n");
   #endif
 }
 

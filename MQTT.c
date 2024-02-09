@@ -106,7 +106,7 @@ void Parser(void) {
 // 
 void TM4C_to_MQTT(void){
   char b2w_cmd[24]  = ""; 
-  
+	
   //TODO: Add other commands here
   sprintf(b2w_cmd, "%d,\n", Mode_Value);  // Msg is comma seperated, and must end with '\n'          
   
