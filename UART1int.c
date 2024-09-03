@@ -1,11 +1,14 @@
 // UART1int.c
 // Runs on LM4F120/TM4C123
 // Use UART1 to implement bidirectional data transfer to and from another microcontroller
-// U1Rx PB0 is RxD (input to this microcontroller)
-// U1Tx PB1 is TxD (output of this microcontroller)
+
+// PC4 and PC5 exist also on J12
+// U1Rx PC4 is RxD (input to this microcontroller)
+// U1Tx PC5 is TxD (output of this microcontroller)
+
 // interrupts and FIFO used for receiver, busy-wait on transmit.
 // Daniel Valvano
-// Jan 3, 2020
+// April 5, 2023
 
 
 /* This example accompanies the book
@@ -118,6 +121,37 @@ void UART1_Init(void){
                                         // configure PB1-0 as UART
   GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;
   GPIO_PORTB_AMSEL_R &= ~0x03;          // disable analog functionality on PB
+                                        // UART1=priority 2
+  NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 21-23
+  NVIC_EN0_R = NVIC_EN0_INT6;           // enable interrupt 6 in NVIC
+  EnableInterrupts();
+}
+//------------UART1_InitUART1_InitPC54------------
+// Initialize the UART1 for 115,200 baud rate (assuming 80 MHz clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void UART1_InitPC54(void){
+  SYSCTL_RCGCUART_R |= 0x02;            // activate UART1
+  SYSCTL_RCGCGPIO_R |= 0x04;            // activate port C
+  RxFifo_Init();                        // initialize empty FIFO
+  UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
+  UART1_IBRD_R = 43;                    // IBRD = int(80,000,000 / (16 * 115200)) = int(43.402778)
+  UART1_FBRD_R = 26;                    // FBRD = round(0.402778 * 64) = 26
+                                        // 8 bit word length (no parity bits, one stop bit, FIFOs)
+  UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
+  UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
+                                        // configure interrupt for TX FIFO <= 1/8 full
+                                        // configure interrupt for RX FIFO >= 1/8 full
+  UART1_IFLS_R += (UART_IFLS_TX1_8|UART_IFLS_RX1_8);
+                                        // enable RX FIFO interrupts and RX time-out interrupt
+  UART1_IM_R |= (UART_IM_RXIM|UART_IM_RTIM);
+  UART1_CTL_R |= 0x301;                 // enable UART
+  GPIO_PORTC_AFSEL_R |= 0x30;           // enable alt funct on PC5-4
+  GPIO_PORTC_DEN_R |= 0x30;             // enable digital I/O on PC5-4
+                                        // configure PC5-4 as UART
+  GPIO_PORTC_PCTL_R = (GPIO_PORTC_PCTL_R&0xFF00FFFF)+0x00220000;
+  GPIO_PORTC_AMSEL_R &= ~0x30;          // disable analog functionality on PC5-4
                                         // UART1=priority 2
   NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 21-23
   NVIC_EN0_R = NVIC_EN0_INT6;           // enable interrupt 6 in NVIC

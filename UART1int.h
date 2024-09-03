@@ -1,11 +1,14 @@
-// UART.h
+// UART1int.h
 // Runs on LM4F120/TM4C123
 // Use UART1 to implement bidirectional data transfer to and from another microcontroller
 // U1Rx PB0 is RxD (input to this microcontroller)
 // U1Tx PB1 is TxD (output of this microcontroller)
+// U1Rx PC4 is RxD (input to this microcontroller)
+// U1Tx PC5 is TxD (output of this microcontroller)
+
 // interrupts and FIFO used for receiver, busy-wait on transmit.
 // Daniel Valvano
-// Jan 3, 2020
+// v
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
@@ -23,7 +26,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
+#include <stdint.h>
 
 // standard ASCII symbols
 #define CR   0x0D
@@ -39,12 +42,23 @@
 // Input: none
 // Output: none
 void UART1_Init(void);
-
+//------------UART1_InitUART1_InitPC54------------
+// Initialize the UART1 for 115,200 baud rate (assuming 80 MHz clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void UART1_InitPC54(void);
 //------------UART1_InChar------------
 // Wait for new serial port input
 // Input: none
 // Output: ASCII code for key typed
 uint8_t UART1_InChar(void);
+
+//------------UART1_InStatus------------
+// Returns how much data available for reading
+// Input: none
+// Output: number of elements in receive FIFO
+uint32_t UART1_InStatus(void);
 
 //------------UART1_OutChar------------
 // Output 8-bit to serial port

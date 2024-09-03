@@ -19,7 +19,7 @@
  http://users.ece.utexas.edu/~valvano/
 
 Simplified BSD License (FreeBSD License)
-Copyright (c) 2021, Jonathan Valvano, All rights reserved.
+Copyright (c) 2024, Jonathan Valvano, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include <stdlib.h>
 #include "../inc/SSD1306.h"
 #include "../inc/CortexM.h"
+#define USEprintf 0
 // Tested for four possible hardware connections 
 // compile parameter I2C in SSD1306.h
 /*
@@ -106,7 +107,6 @@ policies, either expressed or implied, of the FreeBSD Project.
 // *************************** Screen dimensions ***************************
 #define WIDTH     128
 #define HEIGHT     64
-#define CR   0x0D
 
 uint8_t buffer[WIDTH*HEIGHT/8]; // 8192 bits or 1024 bytes
 int vccstate;
@@ -252,11 +252,6 @@ static const uint8_t ASCII[][6] = {
   ,{0x10, 0x08, 0x08, 0x10, 0x08, 0x00}, // 7e ~
 //  ,{0x78, 0x46, 0x41, 0x46, 0x78, 0x00} // 7f DEL
   {0x1f, 0x24, 0x7c, 0x24, 0x1f, 0x00}, // 7f UT sign
-  {0x00, 0x08, 0x36, 0x41, 0x00, 0x00},  // char =  7a 123
-  {0x00, 0x00, 0x77, 0x00, 0x00, 0x00},  // char =  7b 124
-  {0x00, 0x41, 0x36, 0x08, 0x00, 0x00},  // char =  7c 125
-  {0x02, 0x01, 0x02, 0x04, 0x02, 0x00},  // char =  7d 126
-  {0x3C, 0x26, 0x23, 0x26, 0x3C, 0x00},  // char =  7e 127
   {0x1E, 0xA1, 0xA1, 0x61, 0x12, 0x00},  // char =  128
   {0x3A, 0x40, 0x40, 0x20, 0x7A, 0x00},  // char =  129
   {0x38, 0x54, 0x54, 0x55, 0x59, 0x00},  // char =  130
@@ -1584,7 +1579,17 @@ void SSD1306_OutUHex7(uint8_t n){
   SSD1306_OutHex7(n/16); /* 16s digit */
   SSD1306_OutHex7(n);    /* ones digit */
 }
-
+void SSD1306_OutUHex32(uint32_t n){
+  SSD1306_OutString("0x");
+  SSD1306_OutHex7(n>>28); /* bits 31-28 */
+  SSD1306_OutHex7(n>>24); /* bits 27-24  */
+  SSD1306_OutHex7(n>>20); /* bits 23-20 */
+  SSD1306_OutHex7(n>>16); /* bits 19-16 */
+  SSD1306_OutHex7(n>>12); /* bits 15-12 */
+  SSD1306_OutHex7(n>>8);  /* bits 11-8 */
+  SSD1306_OutHex7(n>>4);  /* bits 7-4 */
+  SSD1306_OutHex7(n);     /* bits 3-0 */
+}
 void SSD1306_OutUDec16(uint32_t n){
   SSD1306_OutChar(' ');
   if(n>=100){
@@ -1618,8 +1623,34 @@ void SSD1306_OutUDec2(uint32_t n){
   }
 }
 
+//********SSD1306_OutUFix3_1*****************
+// Output a 16-bit number in unsigned 4-digit fixed point, 0.1 resolution
+// numbers 0 to 9999 printed as "  0.0" to "999.9"
+// Inputs: n  16-bit unsigned number
+// Outputs: none
+void SSD1306_OutUFix3_1(uint16_t n){
+  if(n>9999)n=9999;
+  if(n>=1000){  // 1000 to 9999
+    SSD1306_OutChar(n/1000+'0'); /* hundreds digit */
+    n = n%1000; //the rest
+    SSD1306_OutChar(n/100+'0'); /* tens digit */
+    n = n%100; //the rest
+  }else { // 0 to 999
+    SSD1306_OutChar(' '); /* n is between 0.0 and 9.9 */
+    if(n>=100){  // 100 to 999
+      SSD1306_OutChar((n/100)+'0'); /* hundreds digit */
+      n = n%100; //the rest
+    }else{
+      SSD1306_OutChar(' '); /* n is between 0.0 and 9.9 */
+    }
+  }
+  SSD1306_OutChar(n/10+'0'); /* ones digit */
+  n = n%10; //the rest
+  SSD1306_OutChar('.');
+  SSD1306_OutChar(n+'0'); /* tenths digit */
 
-
+}
+#if USEprintf
 // Print a character to ST7735 LCD.
 int fputc(int ch, FILE *f){
   SSD1306_OutChar(ch);
@@ -1634,3 +1665,5 @@ int ferror(FILE *f){
   /* Your implementation of ferror */
   return EOF;
 }
+#endif
+

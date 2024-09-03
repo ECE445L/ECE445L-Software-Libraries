@@ -480,7 +480,7 @@ void LCD_SetTextColor(unsigned char r, unsigned char g, unsigned char b){
 //   - %b   Binary integer
 //   - %%   A single % output
 // ********************************************************
-void printf(char fmt[], ...) {
+void LCD_printf(char fmt[], ...) {
 	unsigned char k = 0;
 	void* next_arg = &fmt + 1;
 	while (fmt[k] != 0) {
@@ -650,11 +650,11 @@ void LCD_PrintFloat(float num){
     long temp;
     
     // Decode exponent
-    printf ("binary = %b\n", num);
-    printf ("hex    = %x\n", num);
+    LCD_printf ("binary = %b\n", num);
+    LCD_printf ("hex    = %x\n", num);
     
     temp = ((long)num);
-    printf ("exponent = %d\n", temp);
+    LCD_printf ("exponent = %d\n", temp);
     
     
     LCD_PrintChar('\n');

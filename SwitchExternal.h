@@ -26,7 +26,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 
 #define PA5  (*((volatile uint32_t *)0x40004080))
 //------------SwitchPA5_Init------------

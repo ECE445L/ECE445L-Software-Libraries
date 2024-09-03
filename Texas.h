@@ -1,18 +1,20 @@
-// *****************Texas.h**************
+// *****************TExaS.h**************
+// TExaS uses Timer5 and UART0
 // Open version of TExaS
-// analog scope on PD3 using ADC1, Timer5 and UART0
-// Runs on either TM4C123
+// analog scope on PD3, PD2, PE2 or PB5 using ADC1
+// logic analyzer on Port A, B, C, E or F
+// Runs on  TM4C123
 // Daniel and Jonathan Valvano
-// Jan 18, 2021
+// Jan 25, 2022
 
 /* This example accompanies the books
    "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2021
 
    "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
-   ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2021
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2022 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -23,22 +25,29 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
-
 #include <stdint.h>
 
 enum TExaSmode{
-  SCOPE,
-  LOGICANALYZER
+  SCOPE, // PD3
+  SCOPE_PD2,
+  SCOPE_PE2,
+  SCOPE_PB5,
+  LOGICANALYZERA,
+  LOGICANALYZERB,
+  LOGICANALYZERC,
+  LOGICANALYZERE,
+  LOGICANALYZERF,
+  NONE
 };
 
 // ************TExaS_Init*****************
 // Initialize scope or logic analyzer, triggered by periodic timer
+// It will call PLL_Init(Bus80MHz)
 // This needs to be called once
-// Inputs: Scope or Logic analyzer
+// Inputs: Logic analyzer or scope on PD3, PD2 or PE2 or PB5
 //         Bus clock frequency in Hz
 // Outputs: none
-void TExaS_Init(enum TExaSmode mode, uint32_t busfrequency);
+void TExaS_Init(enum TExaSmode mode);
 
 // ************TExaS_Stop*****************
 // Stop the transfer
@@ -46,56 +55,5 @@ void TExaS_Init(enum TExaSmode mode, uint32_t busfrequency);
 // Outputs: none
 void TExaS_Stop(void);
 
-// toggle bit 0 
-void TExaS_Task0(void);
-// toggle bit 1 
-void TExaS_Task1(void);
-// toggle bit 2 
-void TExaS_Task2(void);
-// toggle bit 3 
-void TExaS_Task3(void);
-// toggle bit 4 
-void TExaS_Task4(void);
-// toggle bit 5 
-void TExaS_Task5(void);
-// toggle bit 6 
-void TExaS_Task6(void);
-// set bit 0 
-void TExaS_Set0(void);
-// set bit 1 
-void TExaS_Set1(void);
-// set bit 2 
-void TExaS_Set2(void);
-// set bit 3 
-void TExaS_Set3(void);
-// set bit 4 
-void TExaS_Set4(void);
-// set bit 5 
-void TExaS_Set5(void);
-// set bit 6 
-void TExaS_Set6(void);
-// clear bit 0 
-void TExaS_Clear0(void);
-// clear bit 1 
-void TExaS_Clear1(void);
-// clear bit 2 
-void TExaS_Clear2(void);
-// clear bit 3 
-void TExaS_Clear3(void);
-// clear bit 4 
-void TExaS_Clear4(void);
-// clear bit 5 
-void TExaS_Clear5(void);
-// clear bit 6 
-void TExaS_Clear6(void);
 
-// ************TExaS_SetTask*****************
-// Initialize logic analyzer or scope on timer 5A 100us
-// sets PLL to 80 MHz
-// This needs to be called once
-// Inputs: function to send data
-// This will only activate clock, 
-// user sets direction and other modes for digital pins
-// Outputs: none
-void TExaS_SetTask(void(*task)(void));
 

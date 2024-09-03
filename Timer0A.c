@@ -3,18 +3,18 @@
 // Use Timer0A in periodic mode to request interrupts at a particular
 // period.
 // Daniel Valvano
-// Jan 4, 2020
+// August 4, 2024
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to ARM Cortex M Microcontrollers"
-   ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2024
    Volume 1, Program 9.8
 
   "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2024
    Volume 2, Program 7.5, example 7.6
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -44,7 +44,7 @@
                                             // Register Low
 
 
-static void (*PeriodicTask0)(void);   // user function
+void (*PeriodicTask0)(void);   // user function
 
 // ***************** Timer0A_Init ****************
 // Activate Timer0A interrupts to run user task periodically

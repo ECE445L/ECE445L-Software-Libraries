@@ -7,12 +7,12 @@
    "Embedded Systems: Introduction to ARM Cortex M Microcontrollers",
       ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2020
    "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-      ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+      ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2024
    "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
       ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2020
    Vol 2, Program 2.10, Figure 2.37
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED

@@ -22,7 +22,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 
 // PF4 connected to a negative logic switch using internal pull-up (trigger on both edges)
 // Initialize switch interface on PF4 

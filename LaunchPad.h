@@ -23,9 +23,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
-
-#include <stdint.h>
+ #include <stdint.h>
 
 // negative logic built-in SW 1 connected to PF4
 // negative logic built-in SW 2 connected to PF0
@@ -61,8 +59,8 @@ void LaunchPad_Init(void);
 // Convert hardware negative logic to software positive logic 
 // Input: none
 // Output: 0x00 none
-//         0x01 SW2 pressed (from PF4)
-//         0x02 SW1 pressed (from PF1)
+//         0x01 SW1 pressed (from PF1)
+//         0x02 SW2 pressed (from PF4)
 //         0x03 both SW1 and SW2 pressed
 uint8_t LaunchPad_Input(void);
 void LaunchPad_WaitForTouch(void);

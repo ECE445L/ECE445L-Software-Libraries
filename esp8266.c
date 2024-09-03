@@ -66,10 +66,10 @@
 #define ESP8266_PB_RST   5  // PB5
 // #define ESP8266_PB_RST   1  // PB1
 
-#define ESP8266_UART     1   // UART1: PB1/PB0
-// #define ESP8266_UART     2   // UART2: PD7/PB6
+//#define ESP8266_UART     1   // UART1: PB1/PB0
+#define ESP8266_UART     2   // UART2: PD7/PB6
 
-#define USE_UART_DRV  // Use external UART driver (only works with UART1)
+//#define USE_UART_DRV  // Use external UART driver (only works with UART1)
 
 #define FIFOSIZE    1024      // size of the FIFOs (must be power of 2)
 #define FIFOSUCCESS 1         // return value on success
@@ -265,7 +265,9 @@ void ESP8266_EnableInterrupt(void){
 void ESP8266_DisableInterrupt(void){
   UART_ESP8266(_DisableRXInterrupt)();
 }
-
+//#define DSIZE 64
+//char dbuf[DSIZE];
+//int dcnt=0;
 //----------ESP8266RxToBuffer----------
 // Copies uart fifo to RX buffer (software defined FIFO)
 // Inputs: none
@@ -274,6 +276,8 @@ void static ESP8266RxToBuffer(void){
   char letter;
   while(((UART_ESP8266(_FR_R)&UART_FR_RXFE) == 0) && (ESP8266RxFifo_Size() < (FIFOSIZE - 1))){
     letter = UART_ESP8266(_DR_R);
+//    dbuf[dcnt] = letter;
+//    dcnt = (dcnt+1)&(DSIZE-1);
     if(ESP8266_EchoResponse){
       UART_OutCharNonBlock(letter); // echo
     }
@@ -497,7 +501,8 @@ int ESP8266_WaitForResponse(const char *success, const char* failure) {
 int ESP8266_Init(int rx_echo, int tx_echo){ char c; const char* s; uint32_t timer = 1;
   // Disable interrupt during initialization
   ESP8266_DisableInterrupt();
-  
+  SYSCTL_RCGCGPIO_R |= 0x02; // Port B has reset signal
+
   // Initialize UART to communicate with ESP
   ESP8266_InitUART(rx_echo, tx_echo);
   

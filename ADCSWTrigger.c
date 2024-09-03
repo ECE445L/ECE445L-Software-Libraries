@@ -8,9 +8,9 @@
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2024
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -423,6 +423,54 @@ uint32_t ADC0_InSeq3_InternalTemperature(void){  uint32_t result;
   return result;
 }
 
+// Initializes ADC0: PE4, PE5, and PE1 sampling
+// 125k max sampling
+// SS2 triggering event: software trigger, busy-wait sampling
+// SS2 1st sample source: Ain9 (PE4)
+// SS2 2nd sample source: Ain8 (PE5)
+// SS2 3rd sample source: Ain2 (PE1)
+// SS2 interrupts: enabled after 3rd sample but not promoted to controller
+void ADC_InitTriple(void){ 
+  volatile uint32_t delay;                         
+  SYSCTL_RCGCADC_R |= 0x00000001; // 1) activate ADC0
+  SYSCTL_RCGCGPIO_R |= 0x10;      // 1) activate clock for Port E
+  while((SYSCTL_PRGPIO_R&0x10) == 0){};
+  while((SYSCTL_PRADC_R&0x0001) != 0x0001){};    // good code, but not yet implemented in simulator
+  GPIO_PORTE_DIR_R &= ~0x32;      // 3) make PE4, PE5, and PE1 input
+  GPIO_PORTE_AFSEL_R |= 0x32;     // 4) enable alternate function on PE4, PE5, and PE1
+  GPIO_PORTE_DEN_R &= ~0x32;      // 5) disable digital I/O on PE4, PE5, and PE1
+  GPIO_PORTE_PCTL_R = GPIO_PORTE_PCTL_R&0xFF00FF0F;
+  GPIO_PORTE_AMSEL_R |= 0x32;     // 6) enable analog functionality on PE4, PE5, and PE1
+  ADC0_PC_R = (ADC0_PC_R&~0x0F)|0x1;   //    configure for 125K samples/sec
+  ADC0_SSPRI_R = 0x3210;          // 9) Sequencer 3 is lowest priority
+  ADC0_ACTSS_R &= ~0x0004;        // 10) disable sample sequencer 2
+  ADC0_EMUX_R &= ~0x0F00;         // 11) seq2 is software trigger
+  ADC0_SAC_R = 0x06;              // 64-point average
+  ADC0_SSMUX2_R = 0x0289;         // 12) set channels for SS2
+  ADC0_SSCTL2_R = 0x0600;         // 13) no TS0 D0 IE0 END0 TS1 D1, yes IE2 END2
+  ADC0_IM_R &= ~0x0004;           // 14) disable SS2 interrupts
+  ADC0_ACTSS_R |= 0x0004;         // 15) enable sample sequencer 2
+}
+
+//------------ADC_In3210------------
+// Busy-wait Analog to digital conversion
+// Input: none
+// Output: four 12-bit result of ADC conversions
+// Samples ADC0(PE3), ADC1(PE2), ADC2(PE1) and ADC3(PE0) 
+// 125k max sampling
+// software trigger, busy-wait sampling
+// data returned by reference
+// d1 is Ain9 (PE4) 0 to 4095
+// d2 is Ain8 (PE5) 0 to 4095
+// d3 is Ain2 (PE1) 0 to 4095
+void ADC_InTriple(uint32_t *d1, uint32_t *d2, uint32_t *d3){ 
+  ADC0_PSSI_R = 0x0004;            // 1) initiate SS2
+  while((ADC0_RIS_R&0x04)==0){};   // 2) wait for conversion done
+  *d1 = ADC0_SSFIFO2_R&0xFFF;  // 3A) PE4 result
+  *d2 = ADC0_SSFIFO2_R&0xFFF;  // 3A) PE5 result
+  *d3 = ADC0_SSFIFO2_R&0xFFF;  // 3B) PE1 result
+  ADC0_ISC_R = 0x0004;             // 4) acknowledge completion
+}
 
 // Initializes ADC0(PE3), ADC1(PE2), ADC2(PE1) and ADC3(PE0) sampling
 // 125k max sampling

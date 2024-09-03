@@ -86,7 +86,7 @@ void LCD_SetTextColor(unsigned char r, unsigned char g, unsigned char b);
 //   - %b   Binary integer
 //   - %%   A single % output
 // ********************************************************
-void printf(char fmt[], ...);
+void LCD_printf(char fmt[], ...);
 
 // ************** LCD_PrintInteger ************************
 // - Prints a signed integer to the screen

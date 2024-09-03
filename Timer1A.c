@@ -2,14 +2,14 @@
 // Runs on LM4F120/TM4C123
 // Use TIMER1 in 32-bit periodic mode to request interrupts at a periodic rate
 // Daniel Valvano
-// Jan 1, 2020
+// August 4, 2024
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2024
   Program 7.5, example 7.6
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -47,8 +47,10 @@ void Timer1A_Init(void(*task)(void), uint32_t period, uint32_t priority){
   NVIC_EN0_R = 1<<21;           // 9) enable IRQ 21 in NVIC
   TIMER1_CTL_R = 0x00000001;    // 10) enable TIMER1A
 }
-
+// write 1 to TIMER1_ICR_R
+// will clear bit 0 TIMER1_RIS_R
 void Timer1A_Handler(void){
+	// acknowledging
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER1A timeout
   (*PeriodicTask1)();               // execute user task
 }

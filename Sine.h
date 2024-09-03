@@ -27,8 +27,6 @@
 //For more information about my classes, my research, and my books, see
 //http://users.ece.utexas.edu/~valvano/
 
-#pragma once
-
 //------------Sin------------
 // Calculate the sine value of a given angle using table lookup and
 // linear interpolation.

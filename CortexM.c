@@ -7,11 +7,11 @@
    "Embedded Systems: Introduction to ARM Cortex M Microcontrollers",
       ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2020
    "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-      ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+      ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2024
    "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
       ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2020
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -37,23 +37,6 @@
 // Outputs: none
 // implemented in startup_TM4C123.s
 
-
-//******StartCritical************
-// StartCritical saves a copy of PRIMASK and disables interrupts
-// Code between StartCritical and EndCritical is run atomically
-// Inputs: none
-// Outputs: copy of the PRIMASK (I bit) before StartCritical called
-// implemented in startup_TM4C123.s
-
-
-//******EndCritical************
-// EndCritical sets PRIMASK with value passed in
-// Code between StartCritical and EndCritical is run atomically
-// Inputs: PRIMASK (I bit) before StartCritical called
-// Outputs: none
-// implemented in startup_TM4C123.s
-
-
 //******WaitForInterrupt************
 // enters low power sleep mode waiting for interrupt (WFI instruction)
 // processor sleeps until next hardware interrupt
@@ -62,29 +45,13 @@
 // Outputs: none
 // implemented in startup_TM4C123.s
 
-
-
-// delay function
-// which delays 3.3*ulCount cycles
-// ulCount=23746 => 1ms = 23746*3.3cycle/loop/80,000
-#ifdef __TI_COMPILER_VERSION__
-  //Code Composer Studio Code
-  void Clock_Delay(uint32_t ulCount){
-  __asm (  "pdloop:  subs    r0, #1\n"
-      "    bne    pdloop\n");
+void Clock_Delay(uint32_t ulCount){
+  while(ulCount){
+    ulCount--;
+  }
 }
 
-#else
-  //Keil uVision Code
-  __asm void
-  Clock_Delay(uint32_t ulCount)
-  {
-    subs    r0, #1
-    bne     Clock_Delay
-    bx      lr
-  }
 
-#endif
   
 // ------------Clock_Delay1ms------------
 // Simple delay function which delays about n milliseconds.

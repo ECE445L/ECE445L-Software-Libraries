@@ -27,7 +27,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 
 // negative logic switches connected to PF0 and PF4 on the Launchpad
 // red LED connected to PF1 on the Launchpad

@@ -12,7 +12,7 @@
    "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
       ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2020
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2024 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -68,8 +68,8 @@ void LaunchPad_Init(void){
 // Convert hardware negative logic to software positive logic 
 // Input: none
 // Output: 0x00 none
-//         0x01 SW2 pressed (from PF4)
-//         0x02 SW1 pressed (from PF1)
+//         0x01 SW1 pressed (from PF0)
+//         0x02 SW2 pressed (from PF4)
 //         0x03 both SW1 and SW2 pressed
 uint8_t LaunchPad_Input(void){
   uint32_t data;
@@ -109,6 +109,6 @@ void LaunchPad_WaitForRelease(void){
 // Positive logic hardware and positive logic software
 // Input: 0 off, bit0=red,bit1=blue,bit2=green
 // Output: none
-void LaunchPad_Output(uint8_t data){  // write three outputs bits of P2
+void LaunchPad_Output(uint8_t data){  // write three outputs bits of PF
   GPIO_PORTF_DATA_R = data<<1;
 }

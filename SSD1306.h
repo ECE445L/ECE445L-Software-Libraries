@@ -100,7 +100,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define _SSD1306_H_
 #include <stdint.h>
 // Tested for four possible hardware connections I2C=0 I2C=1 I2C=2 and I2C=3
-#define I2C 3
+#define I2C 1
 /*
  *  I2C0 Conncection | I2C1 Conncection | I2C2 Conncection | I2C3 Conncection
  *  ---------------- | ---------------- | ---------------- | ----------------
@@ -112,7 +112,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define SSD1306_INVERSE             2 ///< Invert pixels
 #define SSD1306_EXTERNALVCC         0x01 ///< External display voltage source
 #define SSD1306_SWITCHCAPVCC        0x02 ///< Gen. display voltage from 3.3V
-
+#define CR 0x0D
 #define true 1   ///< Function successive
 #define false 0  ///< Function failed
 
@@ -131,7 +131,7 @@ policies, either expressed or implied, of the FreeBSD Project.
  * Initialize OLED
  * @param vccst Vcc voltage parameter, uSSD1306_EXTERNALVCC or SSD1306_SWITCHCAPVCC
  * @return success or failure
- * @note for EE319K use vccst=SSD1306_SWITCHCAPVCC
+ * @note for ECE319K and ECE445L use vccst=SSD1306_SWITCHCAPVCC
  */
 int  SSD1306_Init(int vccst);
 
@@ -319,7 +319,9 @@ void SSD1306_DrawChar(int16_t x, int16_t y, char letter, uint16_t color);
     @return None (void).
     @note   Changes buffer contents only, no immediate effect on display.
             Follow up with a call to SSD1306_DisplayBuffer(), or with other
-            graphics commands as needed by one's own application.
+            graphics commands as needed by one's own application.      
+    @image html SSD1306DrawString.png width=300px            
+
 */
 void SSD1306_DrawString(int16_t x, int16_t y, char *pt, uint16_t color);
 
@@ -483,6 +485,16 @@ void SSD1306_OutHex7(uint8_t n);
 void SSD1306_OutUHex7(uint8_t n);
 
 /**
+ * Output 16 hex digits to the SSD1306 OLED.
+ * Prints 16 characters with leading 0x
+ * @param n unsigned 32-bit number to print
+ * @return none
+ * @brief  Print 16 hex digits
+ * @note use SSD1306_SetCursor to specify position
+ */
+void SSD1306_OutUHex32(uint32_t n);
+
+/**
  * Output three decimal digits to the SSD1306 OLED.
  * Prints 4 characters with leading space
  * @param n unsigned number 0-999 to print
@@ -492,6 +504,16 @@ void SSD1306_OutUHex7(uint8_t n);
  */
 void SSD1306_OutUDec16(uint32_t n);
 
+/**
+ * Output a 16-bit number in unsigned 4-digit fixed point, 0.1 resolution
+ * fixed size of four right-justified characters.<br>
+ * numbers 0 to 999 printed as "  0.0" to "999.9"
+ * @param n  16-bit unsigned number
+ * @return none
+ * @brief  Print a 16-bit unsigned fixed-point number to the OLED
+ * @note use SSD1306_SetCursor to specify position
+ */
+void SSD1306_OutUFix3_1(uint16_t n);
 /**
  * Output two decimal digits to the SSD1306 OLED.
  * Prints 2 characters without leading space

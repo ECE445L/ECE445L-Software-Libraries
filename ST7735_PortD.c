@@ -1651,51 +1651,7 @@ Parameter LCD display
  */ 
 void ST7735_sDecOut2_PortD(int32_t n){
     
-  int t = n; // total number
-  
-  // if input is greater than 9999 or less than 9999
-  if(n < -9999){
-    ST7735_OutString_PortD(" -**.**");  // output -**.** to display
-    return;
-  }else if(n > 9999){
-    ST7735_OutString_PortD("  **.**");  // output **.** to display
-    return;
-  }else{
-    ST7735_OutString_PortD(" ");
-    if(n < 0){                    // if number is negative
-      t = -t;                     // make t into positive number
-      if(t < 100){                // if t is greater than -1,
-        ST7735_OutString_PortD(" -0."); // print leading space then -0.
-      }else if(t < 1000){         // if t is between -1 and -10,
-        ST7735_OutString_PortD(" -");   // print a leading space and minus sign,
-        ST7735_OutUDec_PortD(t/100);    // then the first two digits
-        ST7735_OutString_PortD(".");
-      }else{                      // if t is between -99 and -1,
-        ST7735_OutString_PortD("-");    // print a minus sign
-        ST7735_OutUDec_PortD(t/100);    // then the first two digits
-        ST7735_OutString_PortD(".");
-      }
-    }else{
-      if(t < 100){                // if t is less than 1,
-        ST7735_OutString_PortD("  0."); // print leading spaces then 0.
-      }else if(t < 1000){         // if t is between 1 and 10,
-        ST7735_OutString_PortD("  ");   // print leading spaces
-        ST7735_OutUDec_PortD(t/100);    // then the first two digits
-        ST7735_OutString_PortD(".");
-      }else{                      // if t is between 10 and 99,
-        ST7735_OutString_PortD(" ");    // print leading space
-        ST7735_OutUDec_PortD(t/100);    // then the first two digits
-        ST7735_OutString_PortD(".");
-      }
-    }
-    if((t%100) < 10){        // if remaining number is less than 0.1,
-      ST7735_OutString_PortD("0"); // print 0 then the digit
-      ST7735_OutUDec_PortD(t%100);
-    }else{                   // if remaining number is between 0.1 and 1,
-      ST7735_OutUDec_PortD(t%100); // print the remaining two digits
-    }
-    return;
-  }
+// EE445L lab assignment
 }
 
 
@@ -1721,37 +1677,8 @@ Parameter LCD display
  64000    "***.**"
 */
 void ST7735_uBinOut6_PortD(uint32_t n){
-  
-  int t = ((n*100) +32) >> 6; // divide input by 64
-  
-  if(n >= 64000){ // if input is greater than 63999    
-    ST7735_OutString_PortD(" ***.**");// output "***.**"
-    return;
-  }else{
-      if(t < 100){                 // if the number is less than 1,
-        ST7735_OutString_PortD("   0."); // output leading spaces then 0
-      }else if(t < 1000){          // if number is between 1 and 10,
-        ST7735_OutString_PortD("   ");   // output leading spaces and then number
-        ST7735_OutUDec_PortD(t/100);
-        ST7735_OutString_PortD(".");
-      }else if(t < 10000){         // if number is between 10 and 100,
-        ST7735_OutString_PortD("  ");    // output leading spaces and then number
-        ST7735_OutUDec_PortD(t/100);
-        ST7735_OutString_PortD(".");
-      }
-      else{                        // if number is between 100 and 1000,
-        ST7735_OutString_PortD(" ");     // output leading space and then number
-        ST7735_OutUDec_PortD(t/100);
-        ST7735_OutString_PortD(".");
-      }
-      if((t%100) < 10){            // if remaining number is less than 0.1,
-        ST7735_OutString_PortD("0");     // output 0 and then remaining digit
-        ST7735_OutUDec_PortD(t%100);
-      }else{                       // if remaining number is between 0.1 and 1,
-        ST7735_OutUDec_PortD(t%100);     // then print out remaining two digits
-      }
-    return;    
-  }
+    
+// EE445L lab assignment
 } 
 
 

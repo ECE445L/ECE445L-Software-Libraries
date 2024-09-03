@@ -21,7 +21,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 #include <stdint.h>
 
 #define STCTRL          (*((volatile uint32_t *)0xE000E010))

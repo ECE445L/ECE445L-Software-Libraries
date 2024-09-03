@@ -20,7 +20,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 
 // external signal connected to PB6 (T0CCP0) (count on rising edge)
 

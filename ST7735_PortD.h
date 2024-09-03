@@ -112,7 +112,7 @@ enum initRFlags_PortD{
 #define ST7735_YELLOW  0x07FF
 #define ST7735_WHITE   0xFFFF
 #define ST7735_GREY    0xDEFB
-#define ST7735_ORANGE  0x029F
+#define ST7735_ORANGE2 0x029F
 
 //------------ST7735_InitB------------
 // Initialization for ST7735B screens.

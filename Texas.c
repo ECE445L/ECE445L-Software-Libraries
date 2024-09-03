@@ -1,18 +1,19 @@
-// *****************Texas.c**************
+// *****************TExaS.c**************
+// TExaS uses Timer5 and UART0
 // Open version of TExaS
-// Analog scope on PD3 using ADC1, Timer5 and UART0
-// Runs on TM4C123
+// analog scope on PD3, PD2, PE2 or PB5 using ADC1
+// logic analyzer on Port A, B, C, E or F
 // Daniel and Jonathan Valvano
-// Jan 18, 2021
+// Jan 25, 2021
 
 /* This example accompanies the books
    "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2021
 
    "Embedded Systems: Real-Time Operating Systems for ARM Cortex-M Microcontrollers",
-   ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2020
+   ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2021
 
- Copyright 2020 by Jonathan W. Valvano, valvano@mail.utexas.edu
+ Copyright 2022 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
     as long as the above copyright notice remains
  THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
@@ -31,11 +32,7 @@
 #include "../inc/TExaS.h"
 #include "../inc/PLL.h"
 
-char volatile LogicData;
 
-void LogicAnalyzer(void){  // called 10k/sec
-  UART0_DR_R = LogicData;  // send data to PC
-}
 void Scope(void){  // called 10k/sec
   UART0_DR_R = (ADC1_SSFIFO3_R>>4); // send ADC to TExaSdisplay
 }
@@ -50,8 +47,8 @@ void Scope(void){  // called 10k/sec
 //           1 Hz to 10 kHz
 //         priority is a number 0 to 6
 // Output: none
-static void (*PeriodicTask2)(void);   // user function
-void PeriodicTask2_Init(void(*task)(void), 
+void (*PeriodicTask5)(void);   // user function
+void Timer5A_Init(void(*task)(void), 
   uint32_t busfrequency, uint32_t freq, uint8_t priority){long sr;
   if((freq == 0) || (freq > 10000)){
     return;                        // invalid input
@@ -60,7 +57,7 @@ void PeriodicTask2_Init(void(*task)(void),
     priority = 6;
   }
   sr = StartCritical();
-  PeriodicTask2 = task;            // user function
+  PeriodicTask5 = task;            // user function
   // ***************** Timer5 initialization *****************
   SYSCTL_RCGCTIMER_R |= 0x20;      // 0) activate clock for Timer5
   while((SYSCTL_PRTIMER_R&0x20) == 0){};// allow time for clock to stabilize
@@ -86,7 +83,7 @@ void PeriodicTask2_Init(void(*task)(void),
 
 void Timer5A_Handler(void){
   TIMER5_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER5A timeout
-  (*PeriodicTask2)();              // execute user task
+  (*PeriodicTask5)();              // execute user task
 }
 
 // ------------PeriodicTask2_Stop------------
@@ -94,7 +91,7 @@ void Timer5A_Handler(void){
 // periodically.
 // Input: none
 // Output: none
-void PeriodicTask2_Stop(void){
+void Timer5A_Stop(void){
   if(SYSCTL_RCGCTIMER_R&0x20){
     // prevent hardware fault if PeriodicTask2_Init() has not been called
     TIMER5_ICR_R = TIMER_ICR_TATOCINT;// clear TIMER5A timeout flag
@@ -103,14 +100,11 @@ void PeriodicTask2_Stop(void){
 }
 
 
-
 #define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
 #define UART_LCRH_WLEN_8        0x00000060  // 8 bit word length
 #define UART_LCRH_FEN           0x00000010  // UART Enable FIFOs
 #define UART_CTL_UARTEN         0x00000001  // UART Enable
-
-
 //------------UART_Init------------
 // Wait for new serial port input
 // Initialize the UART for 115,200 baud rate (assuming busfrequency system clock),
@@ -138,111 +132,13 @@ void UART_Init(uint32_t busfrequency, uint32_t baud){
   GPIO_PORTA_AMSEL_R &= ~0x03;          // disable analog functionality on PA
 }
 
-//------------UART_InChar------------
-// Wait for new serial port input
-// Input: none
-// Output: ASCII code for key typed
-char UART_InChar(void){
-  while((UART0_FR_R&UART_FR_RXFE) != 0);
-  return((char)(UART0_DR_R&0xFF));
-}
 
-//------------UART_OutChar------------
-// Output 8-bit to serial port
-// Input: letter is an 8-bit ASCII character to be transferred
-// Output: none
-void UART_OutChar(char data){
-  while((UART0_FR_R&UART_FR_TXFF) != 0);
-  UART0_DR_R = data;
-}
-
-// toggle bit 0 
-void TExaS_Task0(void){
-  LogicData ^= 0x01;
-}
-// toggle bit 1 
-void TExaS_Task1(void){
-  LogicData ^= 0x02;
-}
-// toggle bit 2 
-void TExaS_Task2(void){
-  LogicData ^= 0x04;
-}
-// toggle bit 3 
-void TExaS_Task3(void){ 
-  LogicData ^= 0x08;
-}
-// toggle bit 4 
-void TExaS_Task4(void){
-}
-// toggle bit 5 
-void TExaS_Task5(void){
-  LogicData ^= 0x20;
-}
-// toggle bit 6 
-void TExaS_Task6(void){
-  LogicData ^= 0x40;
-}
-// set bit 0 
-void TExaS_Set0(void){
-  LogicData |= 0x01;
-}
-// set bit 1 
-void TExaS_Set1(void){
-  LogicData |= 0x02;
-}
-// set bit 2 
-void TExaS_Set2(void){
-  LogicData |= 0x04;
-}
-// set bit 3 
-void TExaS_Set3(void){ 
-  LogicData |= 0x08;
-}
-// set bit 4 
-void TExaS_Set4(void){
-}
-// set bit 5 
-void TExaS_Set5(void){
-  LogicData |= 0x20;
-}
-// set bit 6 
-void TExaS_Set6(void){
-  LogicData |= 0x40;
-}
-// clear bit 0 
-void TExaS_Clear0(void){
-  LogicData |= 0x01;
-}
-// clear bit 1 
-void TExaS_Clear1(void){
-  LogicData |= 0x02;
-}
-// clear bit 2 
-void TExaS_Clear2(void){
-  LogicData |= 0x04;
-}
-// clear bit 3 
-void TExaS_Clear3(void){ 
-  LogicData |= 0x08;
-}
-// clear bit 4 
-void TExaS_Clear4(void){
-}
-// clear bit 5 
-void TExaS_Clear5(void){
-  LogicData |= 0x20;
-}
-// clear bit 6 
-void TExaS_Clear6(void){
-  LogicData |= 0x40;
-}
 
 // start conversions, sample always
 // ADC1
 // PD3 Ain4
 // 16-point averaging 125kHz sampling
-void ADC1_Init(void){ volatile unsigned long delay;
+void ADC1_InitPD3(void){ volatile unsigned long delay;
   SYSCTL_RCGCADC_R |= 0x02;       // 1) ADC1 clock
   SYSCTL_RCGCGPIO_R |= 0x08;      // 2) activate clock for Port D
   while((SYSCTL_PRGPIO_R&0x08) == 0){};// allow time for clock to stabilize
@@ -262,50 +158,168 @@ void ADC1_Init(void){ volatile unsigned long delay;
   ADC1_ACTSS_R = 0x0008;          // 14) enable sample sequencer 3
 }
 
+// start conversions, sample always
+// ADC1
+// PD2 Ain5
+// 16-point averaging 125kHz sampling
+void ADC1_Init_PD2(void){ volatile unsigned long delay;
+  SYSCTL_RCGCADC_R |= 0x02;       // 1) ADC1 clock
+  SYSCTL_RCGCGPIO_R |= 0x08;      // 2) activate clock for Port D
+  while((SYSCTL_PRGPIO_R&0x08) == 0){};// allow time for clock to stabilize
+  GPIO_PORTD_DIR_R &= ~0x04;      // 3) make PD2 input
+  GPIO_PORTD_AFSEL_R |= 0x04;     // 4) enable alternate function on PD2
+  GPIO_PORTD_DEN_R &= ~0x04;      // 5) disable digital I/O on PD2
+  GPIO_PORTD_AMSEL_R |= 0x04;     // 6) enable analog functionality on PD2
+  for(delay = 0; delay<20; delay++){};  // allow time for clock to stabilize
+  ADC1_PC_R = 0x01;               // 7) 125K rate
+  ADC1_SSPRI_R = 0x0123;          // 8) Sequencer 3 is highest priority
+  ADC1_ACTSS_R = 0x0000;          // 9) disable sample sequencer 3
+  ADC1_EMUX_R |= 0xF000;          // 10) seq3 is always/continuous trigger
+  ADC1_SAC_R = 0x03;              //   8-point average 125kHz/8 = 15,625 Hz
+  ADC1_SSMUX3_R = 5;              // 11) set channel 5
+  ADC1_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
+  ADC1_IM_R = 0x0000;             // 13) disable SS3 interrupts
+  ADC1_ACTSS_R = 0x0008;          // 14) enable sample sequencer 3
+}
+
+// start conversions, sample always
+// ADC1
+// PE2 Ain1
+// 16-point averaging 125kHz sampling
+void ADC1_Init_PE2(void){ volatile unsigned long delay;
+  SYSCTL_RCGCADC_R |= 0x02;       // 1) ADC1 clock
+  SYSCTL_RCGCGPIO_R |= 0x10;      // 2) activate clock for Port E
+  while((SYSCTL_PRGPIO_R&0x10) == 0){};// allow time for clock to stabilize
+  GPIO_PORTE_DIR_R &= ~0x04;      // 3) make PE2 input
+  GPIO_PORTE_AFSEL_R |= 0x04;     // 4) enable alternate function on PE2
+  GPIO_PORTE_DEN_R &= ~0x04;      // 5) disable digital I/O on PE2
+  GPIO_PORTE_AMSEL_R |= 0x04;     // 6) enable analog functionality on PE2
+  for(delay = 0; delay<20; delay++){};  // allow time for clock to stabilize
+  ADC1_PC_R = 0x01;               // 7) 125K rate
+  ADC1_SSPRI_R = 0x0123;          // 8) Sequencer 3 is highest priority
+  ADC1_ACTSS_R = 0x0000;          // 9) disable sample sequencer 3
+  ADC1_EMUX_R |= 0xF000;          // 10) seq3 is always/continuous trigger
+  ADC1_SAC_R = 0x03;              //   8-point average 125kHz/8 = 15,625 Hz
+  ADC1_SSMUX3_R = 1;              // 11) set channel 1
+  ADC1_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
+  ADC1_IM_R = 0x0000;             // 13) disable SS3 interrupts
+  ADC1_ACTSS_R = 0x0008;          // 14) enable sample sequencer 3
+}
+
+// start conversions, sample always
+// ADC1
+// PB5 Ain11
+// 16-point averaging 125kHz sampling
+void ADC1_Init_PB5(void){ volatile unsigned long delay;
+  SYSCTL_RCGCADC_R |= 0x02;       // 1) ADC1 clock
+  SYSCTL_RCGCGPIO_R |= 0x02;      // 2) activate clock for Port B
+  while((SYSCTL_PRGPIO_R&0x02) == 0){};// allow time for clock to stabilize
+  GPIO_PORTB_DIR_R &= ~0x20;      // 3) make PB5 input
+  GPIO_PORTB_AFSEL_R |= 0x20;     // 4) enable alternate function on PB5
+  GPIO_PORTB_DEN_R &= ~0x20;      // 5) disable digital I/O on PB5
+  GPIO_PORTB_AMSEL_R |= 0x20;     // 6) enable analog functionality on PB5
+  for(delay = 0; delay<20; delay++){};  // allow time for clock to stabilize
+  ADC1_PC_R = 0x01;               // 7) 125K rate
+  ADC1_SSPRI_R = 0x0123;          // 8) Sequencer 3 is highest priority
+  ADC1_ACTSS_R = 0x0000;          // 9) disable sample sequencer 3
+  ADC1_EMUX_R |= 0xF000;          // 10) seq3 is always/continuous trigger
+  ADC1_SAC_R = 0x03;              //   8-point average 125kHz/8 = 15,625 Hz
+  ADC1_SSMUX3_R = 11;             // 11) set channel 11
+  ADC1_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
+  ADC1_IM_R = 0x0000;             // 13) disable SS3 interrupts
+  ADC1_ACTSS_R = 0x0008;          // 14) enable sample sequencer 3
+}
+
+// 1 for PA7-2 logic analyzer A
+#define PA72       (*((volatile uint32_t *)0x400043F0))
+void LogicAnalyzerA(void){  // called 10k/sec
+  UART0_DR_R = (PA72>>2)|0x80;   // send data to TExaSdisplay
+}
+// 2 for PB6-0 logic analyzer B
+#define PB60       (*((volatile uint32_t *)0x400051FC))
+void LogicAnalyzerB(void){  // called 10k/sec
+  UART0_DR_R = PB60|0x80;   // send data to TExaSdisplay
+}
+// 3 for PC7-4 logic analyzer C
+#define PC74       (*((volatile uint32_t *)0x400063C0))
+void LogicAnalyzerC(void){  // called 10k/sec
+  UART0_DR_R = (PC74>>4)|0x80;   // send data to TExaSdisplay
+}
+// 4 for PE5-0 logic analyzer E
+void LogicAnalyzerE(void){  // called 10k/sec
+  UART0_DR_R = GPIO_PORTE_DATA_R|0x80;   // send data to TExaSdisplay
+}
+// 4 for PF4-0 logic analyzer F
+void LogicAnalyzerF(void){  // called 10k/sec
+  UART0_DR_R = GPIO_PORTF_DATA_R|0x80;   // send data to TExaSdisplay
+}
+
 // ************TExaS_Init*****************
 // Initialize grader, triggered by periodic timer
 // This needs to be called once
 // Inputs: Scope or Logic analyzer
 //         Bus clock frequency in Hz
 // Outputs: none
-void TExaS_Init(enum TExaSmode mode,uint32_t busfrequency){
-  // 32 bit free running timer
+void TExaS_Init(enum TExaSmode mode){
   // 10 kHz periodic interrupt
-  // edge triggered interrupt on Profile bits
-  // grade mode will collect 10 seconds of profile (4 arrays)
-  // logic analyzer will 10 kHz output to serial port (pack 4 bits): 8 bit bit7 set then LA, but 7 ASCII
-//  DumpNumber = dump;  // number of profile points to dump
-  UART_Init(busfrequency,115200);
-  LogicData |= 0x80; // bit 7 means logic data
-  if(mode == LOGICANALYZER){
+  PLL_Init(Bus80MHz);
+  UART_Init(80000000,115200);
+
+
+  if(mode == LOGICANALYZERA){
   // enable 10k periodic interrupt if logic analyzer mode
-    PeriodicTask2_Init(&LogicAnalyzer,busfrequency,10000,5); // run logic analyzer
+   SYSCTL_RCGCGPIO_R |= 0x01; // port A needs to be on
+   Timer5A_Init(&LogicAnalyzerA,80000000,10000,5); // run logic analyzer
+   EnableInterrupts();
+  }
+  if(mode == LOGICANALYZERB){
+  // enable 10k periodic interrupt if logic analyzer mode
+   SYSCTL_RCGCGPIO_R |= 0x02; // port B needs to be on
+   Timer5A_Init(&LogicAnalyzerB,80000000,10000,5); // run logic analyzer
+   EnableInterrupts();
+  }
+  if(mode == LOGICANALYZERC){
+  // enable 10k periodic interrupt if logic analyzer mode
+   SYSCTL_RCGCGPIO_R |= 0x04; // port C needs to be on
+   Timer5A_Init(&LogicAnalyzerC,80000000,10000,5); // run logic analyzer
+   EnableInterrupts();
+  }
+  if(mode == LOGICANALYZERE){
+  // enable 10k periodic interrupt if logic analyzer mode
+   SYSCTL_RCGCGPIO_R |= 0x10; // port E needs to be on
+   Timer5A_Init(&LogicAnalyzerE,80000000,10000,5); // run logic analyzer
+   EnableInterrupts();
+  }
+  if(mode == LOGICANALYZERF){
+  // enable 10k periodic interrupt if logic analyzer mode
+   SYSCTL_RCGCGPIO_R |= 0x20; // port F needs to be on
+   Timer5A_Init(&LogicAnalyzerF,80000000,10000,5); // run logic analyzer
+   EnableInterrupts();
   }
   if(mode == SCOPE){
-    ADC1_Init();  // activate PD3 as analog input
-    PeriodicTask2_Init(&Scope,busfrequency,10000,5); // run scope at 10k
+    ADC1_InitPD3();  // activate PD3 as analog input
+    Timer5A_Init(&Scope,80000000,10000,5); // run scope at 10k
+  }
+  if(mode == SCOPE_PD2){
+    ADC1_Init_PD2();  // activate PD2 as analog input
+    Timer5A_Init(&Scope,80000000,10000,5); // run scope at 10k
+  }
+  if(mode == SCOPE_PE2){
+    ADC1_Init_PE2();  // activate PE2 as analog input
+    Timer5A_Init(&Scope,80000000,10000,5); // run scope at 10k
+  }
+  if(mode == SCOPE_PB5){
+    ADC1_Init_PB5();  // activate PB5 as analog input
+    Timer5A_Init(&Scope,80000000,10000,5); // run scope at 10k
   }
 }
 
-// ************TExaS_SetTask*****************
-// Initialize logic analyzer or scope on timer 5A 100us
-// sets PLL to 80 MHz
-// This needs to be called once
-// Inputs: function to send data
-// This will only activate clock, 
-// user sets direction and other modes for digital pins
-// Outputs: none
-void TExaS_SetTask(void(*task)(void)){
-  PLL_Init(Bus80MHz);     // PLL on at 80 MHz
-  ADC1_Init();
-  UART_Init(80000000,115200);
-  PeriodicTask2_Init(task,80000000,10000,5); // run scope at 10k
-}
+
 
 // ************TExaS_Stop*****************
 // Stop the transfer
 // Inputs:  none
 // Outputs: none
 void TExaS_Stop(void){
-  PeriodicTask2_Stop();
+  Timer5A_Stop();
 }

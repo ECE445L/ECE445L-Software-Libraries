@@ -27,7 +27,6 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
 
 // Blue Nokia 5110
 // ---------------

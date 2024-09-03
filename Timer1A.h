@@ -24,6 +24,7 @@
 
 #ifndef __TIMER1INTS_H__ // do not include more than once
 #define __TIMER1INTS_H__
+#include <stdint.h>
 
 // ***************** Timer1A_Init ****************
 // Activate Timer1 interrupts to run user task periodically

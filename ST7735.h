@@ -70,9 +70,9 @@
 // CS   - PA3 TFT_CS, active low to enable TFT
 // *CS  - (NC) SDC_CS, active low to enable SDC
 // MISO - (NC) MISO SPI data from SDC to microcontroller
-// SDA  ï¿½ (NC) I2C data for ADXL345 accelerometer
-// SCL  ï¿½ (NC) I2C clock for ADXL345 accelerometer
-// SDO  ï¿½ (NC) I2C alternate address for ADXL345 accelerometer
+// SDA  – (NC) I2C data for ADXL345 accelerometer
+// SCL  – (NC) I2C clock for ADXL345 accelerometer
+// SDO  – (NC) I2C alternate address for ADXL345 accelerometer
 // Backlight + - Light, backlight connected to +3.3 V
 
 // **********wide.hk ST7735R with ADXL335 accelerometer *******************
@@ -86,9 +86,9 @@
 // CS   - PA3 TFT_CS, active low to enable TFT
 // *CS  - (NC) SDC_CS, active low to enable SDC
 // MISO - (NC) MISO SPI data from SDC to microcontroller
-// Xï¿½ (NC) analog input X-axis from ADXL335 accelerometer
-// Yï¿½ (NC) analog input Y-axis from ADXL335 accelerometer
-// Zï¿½ (NC) analog input Z-axis from ADXL335 accelerometer
+// X– (NC) analog input X-axis from ADXL335 accelerometer
+// Y– (NC) analog input Y-axis from ADXL335 accelerometer
+// Z– (NC) analog input Z-axis from ADXL335 accelerometer
 // Backlight + - Light, backlight connected to +3.3 V
 
 
@@ -133,7 +133,10 @@ enum initRFlags{
 #define ST7735_MAGENTA 0xF81F
 #define ST7735_YELLOW  0x07FF
 #define ST7735_WHITE   0xFFFF
-
+#define ST7735_LIGHTGREY ST7735_Color565(228,228,228)
+#define ST7735_DARKGREY ST7735_Color565(32,32,32)
+#define ST7735_ORANGE ST7735_Color565(255,102,0)
+#define ST7735_PURPLE ST7735_Color565(106,13,173)
 //------------ST7735_InitB------------
 // Initialization for ST7735B screens.
 // Input: none
@@ -512,6 +515,7 @@ void Output_On(void);
 // Output: none
 void Output_Color(uint32_t newColor);
 
+
 /****************ST7735_sDecOut2***************
  converts fixed point number to LCD
  format signed 32-bit with resolution 0.01
@@ -529,57 +533,6 @@ Parameter LCD display
  */ 
 void ST7735_sDecOut2(int32_t n);
 
-/**
- * @brief ST7735_sDecOut3 converts a signed 32-bit decimal fixed point number
- *        into LCD format.
- *
- * @param n Signed 32-bit integer part of fixed-point number.
- * @note  resolution 0.001
- *        range -99.999 to +99.999
- * @example Expected Output
- *    Parameter | LCD display
- *            0 |       0.000
- *            4 |       0.004
- *           -5 |       0.005
- *           78 |       0.078
- *        -1254 |      -1.254
- *         9999 |       9.999
- *       -10000 |     -10.000
- *        12345 |      12.345
- *       -56789 |     -56.789
- *       -99999 |     -99.999
- *        99999 |      99.999
- *       100000 |      **.***
- *      -100000 |     -**.***
- */
-void ST7735_sDecOut3(int32_t n);
-
-/**
- * @brief ST7735_uBinOut5 converts an unsigned 32-bit binary fixed-point number
- *        into LCD format.
- *
- * @param n Unsigned 32-bit integer part of binary fixed-point number.
- * @note  resolution 1/32
- *        range 0.00 to 999.99
- *        if the integer part is larger than 31999, it signifies an error.
- * @example Expected Output
- *    Parameter | LCD display
- *            0 |        0.00
- *            1 |        0.03
- *            5 |        0.16
- *          100 |        3.13
- *          127 |        3.97
- *          252 |        7.88
- *          535 |       16.72
- *         2560 |       80.00
- *         6092 |      190.38
- *        13000 |      406.25
- *        16383 |      511.97
- *        17283 |      540.09
- *        31999 |      999.97
- *        32000 |      ***.**
- */
-void ST7735_uBinOut5(uint32_t n);
 
 /**************ST7735_uBinOut6***************
  unsigned 32-bit binary fixed-point with a resolution of 1/64. 
@@ -604,30 +557,29 @@ Parameter LCD display
 */
 void ST7735_uBinOut6(uint32_t n); 
 
-/**
- * @brief ST7735_XYplotInit specifies the X and Y axes for an X-Y scatter plot.
- *        It also draws the title and clears the plot area.
- *
- * @param title ASCII null terminated string to label the plot.
- * @param minX  Smallest X data value allowed
- * @param maxX  Largest X data value allowed
- * @param minY  Smallest Y data value allowed
- * @param maxY  Largest Y data value allowed
- * @note Assumes minX < maxX, and minY < maxY.
- */
+/**************ST7735_XYplotInit***************
+ Specify the X and Y axes for an x-y scatter plot
+ Draw the title and clear the plot area
+ Inputs:  title  ASCII string to label the plot, null-termination
+          minX   smallest X data value allowed, resolution= 0.001
+          maxX   largest X data value allowed, resolution= 0.001
+          minY   smallest Y data value allowed, resolution= 0.001
+          maxY   largest Y data value allowed, resolution= 0.001
+ Outputs: none
+ assumes minX < maxX, and miny < maxY
+*/
 void ST7735_XYplotInit(char *title, int32_t minX, int32_t maxX, int32_t minY, int32_t maxY);
 
-/**
- * @brief ST7735_XYplot plots an array of (x, y) data.
- *
- * @param num  Number of data points in the two arrays.
- * @param bufX Array of 32-bit fixed-point data
- * @param bufY Array of 32-bit fixed-point data
- * @param color 16-bit color of the data points
- * @note Assumes ST7735_XYplotInit has been previously called, and should ignore
- *       all points beyond the minX, maxX, minY, maxY bounds.
- */
-void ST7735_XYplot(uint32_t num, int32_t bufX[], int32_t bufY[], uint16_t color);
+/**************ST7735_XYplot***************
+ Plot an array of (x,y) data
+ Inputs:  num    number of data points in the two arrays
+          bufX   array of 32-bit fixed-point data, resolution= 0.001
+          bufY   array of 32-bit fixed-point data, resolution= 0.001
+ Outputs: none
+ assumes ST7735_XYplotInit has been previously called
+ neglect any points outside the minX maxY minY maxY bounds
+*/
+void ST7735_XYplot(uint32_t num, int32_t bufX[], int32_t bufY[]);
 
 //************* ST7735_Line********************************************
 //  Draws one line on the ST7735 color LCD
@@ -654,5 +606,14 @@ void ST7735_Line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,
 // Outputs: none
 void ST7735_SetX(int32_t newX);
 
-
+//*************ST7735_DrawLine********************************************
+//  Draws an arbitrary line
+//  Inputs: (x1,y1) is the start point
+//          (x2,y2) is the end point
+//          color is 16-bit 5-6-5 R, G, B format 
+//  x coordinates range from 0 to 127, 0 is left, 79 is right
+//  y coordinates range from 0 to 159, 0 is top, 159 is bottom
+//  Outputs: none
+void ST7735_DrawLine(int32_t x1, int32_t y1,
+                            int32_t x2, int32_t y2, uint32_t color);
 #endif

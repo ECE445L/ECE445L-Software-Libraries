@@ -1,7 +1,6 @@
 // WifiSettings.h
 // Dung Nguyen
 // Wally Guzman
-#pragma once
 
 // Launchpad or TM4C123
 #define LAUNCHPAD 		1
@@ -23,9 +22,10 @@ enum Menu_Status {RX=0, TX, CONNECTED};
 #define SOFTAP        0
 
 // Access Point Parameters
-#define SSID_NAME  "YourAP"
-#define PASSKEY    "YourPassword"
-
+//#define SSID_NAME  "YourAP"
+//#define PASSKEY    "YourPassword"
+#define SSID_NAME  "ValvanoJonathaniPhone"
+#define PASSKEY    "asdfghjkl12#"
 //#define SSID_NAME  "utexas-iot"
 //#define PASSKEY    ""
 

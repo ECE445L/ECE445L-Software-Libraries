@@ -1,10 +1,8 @@
 // FIFO.h
 // Runs on any LM3Sxxx
 // Provide functions that initialize a FIFO, put data in, get data out,
-// and return the current size.  The file includes a transmit FIFO
-// using index implementation and a receive FIFO using pointer
-// implementation.  Other index or pointer implementation FIFOs can be
-// created using the macros supplied at the end of the file.
+// and return the current size.  The file provides macro templates for
+// instantiation of either index or pointer implementation FIFOs.
 // Daniel Valvano
 // June 16, 2011
 
@@ -28,38 +26,32 @@
 #ifndef __FIFO_H__
 #define __FIFO_H__
 
-long StartCritical (void);    // previous I bit, disable interrupts
-void EndCritical(long sr);    // restore I bit to previous value
-
-
 
 // macro to create an index FIFO
 #define AddIndexFifo(NAME,SIZE,TYPE,SUCCESS,FAIL) \
-uint32_t volatile NAME ## PutI;    \
-uint32_t volatile NAME ## GetI;    \
+uint32_t volatile NAME ## PutI;         \
+uint32_t volatile NAME ## GetI;         \
 TYPE static NAME ## Fifo [SIZE];        \
-void NAME ## Fifo_Init(void){ long sr;  \
-  sr = StartCritical();                 \
+void NAME ## Fifo_Init(void){           \
   NAME ## PutI = NAME ## GetI = 0;      \
-  EndCritical(sr);                      \
 }                                       \
 int NAME ## Fifo_Put (TYPE data){       \
   if(( NAME ## PutI - NAME ## GetI ) & ~(SIZE-1)){  \
-    return(FAIL);      \
-  }                    \
+    return(FAIL);                       \
+  }                                     \
   NAME ## Fifo[ NAME ## PutI &(SIZE-1)] = data; \
-  NAME ## PutI ## ++;  \
-  return(SUCCESS);     \
-}                      \
-int NAME ## Fifo_Get (TYPE *datapt){  \
-  if( NAME ## PutI == NAME ## GetI ){ \
-    return(FAIL);      \
-  }                    \
+  NAME ## PutI++;                       \
+  return(SUCCESS);                      \
+}                                       \
+int NAME ## Fifo_Get (TYPE *datapt){    \
+  if( NAME ## PutI == NAME ## GetI ){   \
+    return(FAIL);                       \
+  }                                     \
   *datapt = NAME ## Fifo[ NAME ## GetI &(SIZE-1)];  \
-  NAME ## GetI ## ++;  \
-  return(SUCCESS);     \
-}                      \
-unsigned short NAME ## Fifo_Size (void){  \
+  NAME ## GetI++;                       \
+  return(SUCCESS);                      \
+}                                       \
+unsigned short NAME ## Fifo_Size (void){\
  return ((unsigned short)( NAME ## PutI - NAME ## GetI ));  \
 }
 // e.g.,
@@ -69,13 +61,11 @@ unsigned short NAME ## Fifo_Size (void){  \
 
 // macro to create a pointer FIFO
 #define AddPointerFifo(NAME,SIZE,TYPE,SUCCESS,FAIL) \
-TYPE volatile *NAME ## PutPt;    \
-TYPE volatile *NAME ## GetPt;    \
+TYPE volatile *NAME ## PutPt;           \
+TYPE volatile *NAME ## GetPt;           \
 TYPE static NAME ## Fifo [SIZE];        \
-void NAME ## Fifo_Init(void){ long sr;  \
-  sr = StartCritical();                 \
+void NAME ## Fifo_Init(void){           \
   NAME ## PutPt = NAME ## GetPt = &NAME ## Fifo[0]; \
-  EndCritical(sr);                      \
 }                                       \
 int NAME ## Fifo_Put (TYPE data){       \
   TYPE volatile *nextPutPt;             \
@@ -96,7 +86,7 @@ int NAME ## Fifo_Get (TYPE *datapt){    \
   if( NAME ## PutPt == NAME ## GetPt ){ \
     return(FAIL);                       \
   }                                     \
-  *datapt = *( NAME ## GetPt ## ++);    \
+  *datapt = *( NAME ## GetPt++);        \
   if( NAME ## GetPt == &NAME ## Fifo[SIZE]){ \
     NAME ## GetPt = &NAME ## Fifo[0];   \
   }                                     \

@@ -5,7 +5,6 @@
 // and return the result.
 // Daniel Valvano
 // January 15, 2020
-#pragma once
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
@@ -44,6 +43,7 @@
 // an interrupt when the conversion is finished.  Then, the
 // software can transfer the conversion result to memory and
 // process it after all measurements are complete.
+#include <stdint.h>
 
 // This initialization function sets up the ADC according to the
 // following parameters.  Any parameters not explicitly listed
@@ -167,6 +167,29 @@ void ADC0_InitSWTriggerSeq3_InternalTemperature(void);
 // Input: none
 // Output: 12-bit result of ADC conversion
 uint32_t ADC0_InSeq3_InternalTemperature(void);
+
+
+// Initializes ADC0: PE4, PE5, and PE1 sampling
+// 125k max sampling
+// SS2 triggering event: software trigger, busy-wait sampling
+// SS2 1st sample source: Ain9 (PE4)
+// SS2 2nd sample source: Ain8 (PE5)
+// SS2 3rd sample source: Ain2 (PE1)
+// SS2 interrupts: enabled after 3rd sample but not promoted to controller
+void ADC_InitTriple(void);
+
+//------------ADC_In3210------------
+// Busy-wait Analog to digital conversion
+// Input: none
+// Output: four 12-bit result of ADC conversions
+// Samples ADC0(PE3), ADC1(PE2), ADC2(PE1) and ADC3(PE0) 
+// 125k max sampling
+// software trigger, busy-wait sampling
+// data returned by reference
+// d1 is Ain9 (PE4) 0 to 4095
+// d2 is Ain8 (PE5) 0 to 4095
+// d3 is Ain2 (PE1) 0 to 4095
+void ADC_InTriple(uint32_t *d1, uint32_t *d2, uint32_t *d3);
 
 // Initializes ADC0(PE3), ADC1(PE2), ADC2(PE1) and ADC3(PE0) sampling
 // 125k max sampling

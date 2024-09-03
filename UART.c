@@ -31,11 +31,15 @@
 #include "../inc/UART.h"
 #include "../inc/tm4c123gh6pm.h"
 
+
 #define UART_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART_FR_RXFE            0x00000010  // UART Receive FIFO Empty
 #define UART_LCRH_WLEN_8        0x00000060  // 8 bit word length
 #define UART_LCRH_FEN           0x00000010  // UART Enable FIFOs
 #define UART_CTL_UARTEN         0x00000001  // UART Enable
+
+
+ 
 
 //------------UART_Init------------
 // Initialize the UART for 115,200 baud rate (assuming 80 MHz bus clock),
@@ -249,10 +253,6 @@ char character;
   *bufPt = 0;
 }
 
-#ifdef UART_AS_GENERAL_OUTPUT
-// Abstraction of general output device
-// Volume 2 section 3.4.5
-
 // Print a character to UART.
 int fputc(int ch, FILE *f){
   if((ch == 10) || (ch == 13) || (ch == 27)){
@@ -275,6 +275,10 @@ int ferror(FILE *f){
   return EOF;
 }
 
+// Abstraction of general output device
+// Volume 2 section 3.4.5
+
+
 // Clear display
 void Output_Clear(void){ // Clears the display
   // not implemented on the UART
@@ -292,39 +296,6 @@ void Output_Color(uint32_t newColor){ // Set color of future output
   // not implemented on the UART
 }
 
-#ifdef __TI_COMPILER_VERSION__
-//------------Output_Init------------
-// Initialize the UART for 115,200 baud rate (assuming 3 MHz bus clock),
-// 8 bit word length, no parity bits, one stop bit
-// Input: none
-// Output: none
-void Output_Init(void){int ret_val; FILE *fptr;
-  UART_Init();
-  ret_val = add_device("uart", _SSA, uart_open, uart_close, uart_read, uart_write, uart_lseek, uart_unlink, uart_rename);
-  if(ret_val) return; // error
-  fptr = fopen("uart","w");
-  if(fptr == 0) return; // error
-  freopen("uart:", "w", stdout); // redirect stdout to uart
-  setvbuf(stdout, NULL, _IONBF, 0); // turn off buffering for stdout
-
-}
-#else
-//Keil uVision Code
-//------------Output_Init------------
-// Initialize the Nokia5110
-// Input: none
-// Output: none
-//------------Output_Init------------
-// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
-// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
-// Input: none
-// Output: none
-void Output_Init(void){
-  UART_Init();
-}
-#endif
-
-#endif
 
 #ifdef __TI_COMPILER_VERSION__
 	//Code Composer Studio Code
@@ -359,5 +330,36 @@ int uart_unlink(const char * path){
 int uart_rename(const char *old_name, const char *new_name){
 	return 0;
 }
+
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 3 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit
+// Input: none
+// Output: none
+void Output_Init(void){int ret_val; FILE *fptr;
+  UART_Init();
+  ret_val = add_device("uart", _SSA, uart_open, uart_close, uart_read, uart_write, uart_lseek, uart_unlink, uart_rename);
+  if(ret_val) return; // error
+  fptr = fopen("uart","w");
+  if(fptr == 0) return; // error
+  freopen("uart:", "w", stdout); // redirect stdout to uart
+  setvbuf(stdout, NULL, _IONBF, 0); // turn off buffering for stdout
+
+}
+#else
+//Keil uVision Code
+//------------Output_Init------------
+// Initialize the Nokia5110
+// Input: none
+// Output: none
+//------------Output_Init------------
+// Initialize the UART for 115,200 baud rate (assuming 16 MHz bus clock),
+// 8 bit word length, no parity bits, one stop bit, FIFOs enabled
+// Input: none
+// Output: none
+void Output_Init(void){
+  UART_Init();
+}
 #endif
+
 

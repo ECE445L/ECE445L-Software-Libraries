@@ -33,9 +33,12 @@
 #define CR   0x0D
 #define LF   0x0A
 #define BS   0x08
+#define TAB  0x09
 #define ESC  0x1B
 #define SP   0x20
 #define DEL  0x7F
+#define CTRL_C  0x03
+#define CTRL_S  0x13
 
 //------------UART_Init------------
 // Initialize the UART for 115,200 baud rate (assuming 80 MHz clock),
@@ -147,6 +150,12 @@ void UART_InString(char *bufPt, uint16_t max);
  * @brief  Fixed-point output.
  */
 void UART_Fix2(long number);
+//********UART_OutUFix1*****************
+// Output a 16-bit number in unsigned 4-digit fixed point, 0.1 resolution
+// numbers 0 to 9999 printed as "  0.0" to "999.9"
+// Inputs: n  16-bit unsigned number
+// Outputs: none
+void UART_OutUFix1(uint16_t n);
 //------------Output_Init------------
 // Initialize the UART for 115,200 baud rate (assuming 80 MHz bus clock),
 // 8 bit word length, no parity bits, one stop bit, FIFOs enabled

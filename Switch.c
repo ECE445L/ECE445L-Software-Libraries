@@ -83,6 +83,7 @@ void Switch_Init(void(*touchtask)(void), void(*releasetask)(void)){
 // Interrupt on rising or falling edge of PF4 (CCP0)
 void GPIOPortF_Handler(void){
   GPIO_PORTF_IM_R &= ~0x10;     // disarm interrupt on PF4 
+  // GPIO_PORTF_RIS_R is trigger register
   if(Last){    // 0x10 means it was previously released
     Touch = 1;       // touch occurred
     (*TouchTask)();  // execute user task

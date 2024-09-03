@@ -388,7 +388,32 @@ void UART_Fix2(long number){
   Fixed_Fix2Str(number,message);
   UART_OutString(message);
 }
-
+//********UART_OutUFix1*****************
+// Output a 16-bit number in unsigned 4-digit fixed point, 0.1 resolution
+// numbers 0 to 9999 printed as "  0.0" to "999.9"
+// Inputs: n  16-bit unsigned number
+// Outputs: none
+void UART_OutUFix1(uint16_t n){
+  if(n>9999)n=9999;
+  if(n>=1000){  // 1000 to 9999
+    UART_OutChar(n/1000+'0'); /* hundreds digit */
+    n = n%1000; //the rest
+    UART_OutChar(n/100+'0'); /* tens digit */
+    n = n%100; //the rest
+  }else { // 0 to 999
+    UART_OutChar(' '); /* n is between 0.0 and 9.9 */
+    if(n>=100){  // 100 to 999
+      UART_OutChar((n/100)+'0'); /* hundreds digit */
+      n = n%100; //the rest
+    }else{
+      UART_OutChar(' '); /* n is between 0.0 and 9.9 */
+    }
+  }
+  UART_OutChar(n/10+'0'); /* ones digit */
+  n = n%10; //the rest
+  UART_OutChar('.');
+  UART_OutChar(n+'0'); /* tenths digit */
+}
 //------------UART_InString------------
 // Accepts ASCII characters from the serial port
 //    and adds them to a string until <enter> is typed

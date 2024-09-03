@@ -21,7 +21,7 @@
  For more information about my classes, my research, and my books, see
  http://users.ece.utexas.edu/~valvano/
  */
-#pragma once
+#include <stdint.h>
 
 // external signal connected to PB6 (T0CCP0) (trigger on rising edge)
 
@@ -32,3 +32,27 @@
 // Input: task is a pointer to a user function
 // Output: none
 void TimerCapture_Init(void(*task)(void));
+
+//------------TimerCapture0B_Init------------
+// Initialize Timer0B in edge time mode to request interrupts on
+// the rising edge of PB7 (T0CCP1).  The interrupt service routine
+// acknowledges the interrupt and calls a user function.
+// Input: task is a pointer to a user function
+// Output: none
+void TimerCapture0B_Init(void(*task)(void));
+
+//------------TimerCapture_Init2------------
+// Initialize Timer1A in edge time mode to request interrupts on
+// the rising edge of PF2 as T1CCP0.  The interrupt service routine
+// acknowledges the interrupt and calls a user function.
+// Input: task is a pointer to a user function
+// Output: none
+//void TimerCapture_Init2(void(*task)(void));
+
+//------------TimerCapture3_Init------------
+// Initialize Timer3A in edge time mode to request interrupts on
+// the rising edge of PB3 (CCP0).  The interrupt service routine
+// acknowledges the interrupt and calls a user function.
+// Input: task is a pointer to a user function
+// Output: none
+void TimerCapture3_Init(void(*task)(void));

@@ -116,7 +116,7 @@ uint32_t period;
     return 0;                                 // invalid input, do nothing
   }
   period = 80000000/fs;  // timer ticks per sample, 80MHz
-  if(period < 8000){      // 10kHz max sampling
+  if(period < 4000){      // 20kHz max sampling
     ADCTask = &dummyADC;  // user function
     return 0;
   }
