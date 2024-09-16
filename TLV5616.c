@@ -35,16 +35,8 @@
 // outputs:none
 void DAC_Init(uint16_t data){
     // write this
-    // ***solution***
-  SYSCTL_RCGCSSI_R |= 0x02;  // activate SSI1
-  while(( SYSCTL_RCGCSSI_R & 0x02) == 0){}
-  SSI1_CR1_R = 0x00000000;        // disable SSI, master mode       
-  SSI1_CPSR_R = 0x08;             // 80MHz/8 = 10 MHz SSIClk (should work up to 20 MHz)
-  SSI1_CR0_R &= ~(0x0000FFF0);    // SCR = 0, SPH = 0, SPO = 1 Freescale
-  SSI1_CR0_R += 0x40;             // SPO = 1
-  SSI1_CR0_R |= 0x0F;             // DSS = 16-bit data
-  SSI1_DR_R = data;               // load 'data' into transmit FIFO
-  SSI1_CR1_R |= 0x00000002;       // enable SSI
+	  // Consider the following registers:
+	  // SYSCTL_RCGCSSI_R, SSI1_CR1_R, SSI1_CPSR_R, SSI1_CR0_R, SSI1_DR_R, SSI1_CR1_R
 
 }
 
@@ -54,17 +46,16 @@ void DAC_Init(uint16_t data){
 // 
 void DAC_Out(uint16_t code){
     // write this
-    // ***solution***
-  while((SSI1_SR_R&0x00000002)==0){};       // wait until room in FIFO
-  SSI1_DR_R = code;                         // data out
-  while((SSI1_SR_R&0x00000004)==0){};       // wait until response
-  //return SSI1_DR_R;                       // acknowledge response
+    // Consider the following registers:
+	  // SSI1_SR_R, SSI1_DR_R
 }
 
 // --------------     DAC_OutNonBlocking   ------------------------------------
 // Send data to TLV5616 12-bit DAC without checking for room in the FIFO
 // inputs:  voltage output (0 to 4095)
 // 
-
-
-//*******end of solution*****
+void DAC_Out_NB(uint16_t code){
+    // Consider writing this (If it is what your heart desires)
+    // Consider the following registers:
+	  // SSI1_SR_R, SSI1_DR_R
+}
