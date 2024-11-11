@@ -25,11 +25,7 @@
 #include "esp8266.h"
 
 #define DEBUG1                // First level of Debug
-#define DEBUG2                // Second level of Debug
-#define DEBUG3                // Third level of Debug
 //#undef  DEBUG1                // Comment out to enable Debug1
-//#undef  DEBUG2                // Comment out to enable Debug2
-//#undef  DEBUG3                // Comment out to enable Debug3
 
 #define UART5_FR_TXFF            0x00000020  // UART Transmit FIFO Full
 #define UART5_FR_RXFE            0x00000010  // UART Receive FIFO Empty
@@ -112,29 +108,26 @@ void TM4C_to_MQTT(void){
 void MQTT_to_TM4C(void) {
     
   if ((UART5_FR_R & UART5_FR_RXFE) ==0 ) {  // Check to see if a there is data in the RXD buffer
-    input_char =(UART5_DR_R & 0xFF);        // Read the data from the UART
+		
+			input_char =(UART5_DR_R & 0xFF);      // Read the data from the UART
         
-      if (input_char != '\n')               // If the incoming character is not a newline then process byte
-      {                                     
-        w2b_buf[bufpos] = input_char;     // The buffer position in the array get assigned to the current read
-        bufpos++;                         // Once that has happend the buffer advances,doing this over and over
-                                          // again until the end of package marker is read.
+      if (input_char != '\n'){              // If the incoming character is not a newline then process byte             
+        
+				w2b_buf[bufpos] = input_char;       // The buffer position in the array get assigned to the current read
+        bufpos++;                           // Once that has happend the buffer advances,doing this over and over
+                                            // again until the end of package marker is read.
         #ifdef DEBUG1
-					UART_OutChar(input_char);       // Debug only
+					UART_OutChar(input_char);         // Debug only
 				#endif       
-      }
-      else if (input_char == '\n')
-      {
+      } else if (input_char == '\n'){
+				
         w2b_buf[bufpos] = ',';           // Add a trailing comma
         bufpos++;       								 // Update bufpos
         if (bufpos  > 1) {
 					Parser();                      // Call the parser if new data received
         }
         bufpos = 0;                      // Reset for next string	
-      } 
-      
-    else if ((UART5_FR_R & UART5_FR_RXFE) !=0 ) {     // No new data in the RXD buffer -> Exit routine
-    }  
+      }   
   } 
   
 }   // End of routine
