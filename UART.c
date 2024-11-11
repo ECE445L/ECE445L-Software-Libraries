@@ -38,7 +38,7 @@
 #define UART_LCRH_FEN           0x00000010  // UART Enable FIFOs
 #define UART_CTL_UARTEN         0x00000001  // UART Enable
 
-
+//#define UART_IS_STDOUT
  
 
 //------------UART_Init------------
@@ -253,6 +253,8 @@ char character;
   *bufPt = 0;
 }
 
+#ifdef UART_IS_STDOUT
+
 // Print a character to UART.
 int fputc(int ch, FILE *f){
   if((ch == 10) || (ch == 13) || (ch == 27)){
@@ -295,7 +297,6 @@ void Output_On(void){    // Turns on the display
 void Output_Color(uint32_t newColor){ // Set color of future output 
   // not implemented on the UART
 }
-
 
 #ifdef __TI_COMPILER_VERSION__
 	//Code Composer Studio Code
@@ -361,5 +362,9 @@ void Output_Init(void){
   UART_Init();
 }
 #endif
+
+#endif
+
+
 
 

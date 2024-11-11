@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include "inc/tm4c123gh6pm.h"
 #include "ST7735.h"
-#include "Clock.h"
 #include "PLL.h"
 
 #include "UART.h"
@@ -43,31 +42,21 @@
 void EnableInterrupts(void);    // Defined in startup.s
 
 // ----------   VARIABLES  ----------------------------
-//
-extern uint32_t         Mode_Value;      //
-extern uint32_t         Left_Value;      //
-extern uint32_t         Right_Value;     //
-extern uint32_t         Up_Value;        //
-extern uint32_t         Down_Value;      //
 
-extern uint32_t         ADCvalue;
+//extern uint32_t         Kp1; //Extern for any variables we need to set/get for MQTT code
+//extern uint32_t         Kp2;
+//extern uint32_t         Ki1;
+//extern uint32_t         Ki2;
+//extern uint32_t         Xstar;
+uint32_t example_left_motor_speed;
 
+//Buffers for send / recv
 char                    input_char;
-char                    serial_buf[128];
+char                    b2w_buf[64];
 
-char                    w2b_cmd[2];                   // MQTT Web App Command
-
+char                    w2b_buf[128];
 static uint32_t         bufpos          = 0;
-static uint32_t         parse           = 0;
 
-extern unsigned short   Hour;
-extern unsigned short   Minute;
-extern unsigned short   Second;
-
-uint32_t                HourLast        = 0;
-uint32_t                MinuteLast      = 0;
-uint32_t                SecondLast      = 0;
-uint32_t                ADCvalueLast    = 0;
 
 
 // --------------------------     W2B Parser      ------------------------------
@@ -75,29 +64,23 @@ uint32_t                ADCvalueLast    = 0;
 // This parser decodes and executes commands from the MQTT Web Appication 
 //
 void Parser(void) {
-  
-  uint8_t cmd_num = atoi(w2b_cmd);     // Need to convert ASCII command to integer
-  
-  unsigned short New_Hour;
-  unsigned short New_Minute;
-  unsigned short New_Second;
-  
-  // ----  Command #1: Toggle MODE select 
-  //
-  if(cmd_num == 0x1)  {  
-      if (Mode_Value == 0x1) Mode_Value =0x0;
-      else if (Mode_Value == 0x0) Mode_Value = 0x1;
-  }
-  
-  
+  //Perform operations on the w2b buffer to set variables as appropriate
+	//atoi() and strtok() may be useful
+	
+	char first_token[8];
+	strcpy(first_token, strtok(w2b_buf, ","));
+	
+	#ifdef DEBUG1
+		UART_OutString("Token 1: ");
+		UART_OutString(first_token);
+		UART_OutString("\r\n");
+	#endif
 }
   
 // -----------------------  TM4C_to_MQTT Web App -----------------------------
 // This routine publishes clock data to the
 // MQTT Web Application via the MQTT Broker
 // The data is sent using CSV format:
-// MODE, Hour, Minute, Second, <- Need dangling comma to terminate string in ESP8266
-// 0/1,  0-23,  0-59,    0-59
 //
 // ----------------------------------------------------------------------------
 //    
@@ -105,16 +88,15 @@ void Parser(void) {
 //
 // 
 void TM4C_to_MQTT(void){
-  char b2w_cmd[24]  = ""; 
 	
   //TODO: Add other commands here
-  sprintf(b2w_cmd, "%d,\n", Mode_Value);  // Msg is comma seperated, and must end with '\n'          
+  sprintf(b2w_buf, "%d,\n", example_left_motor_speed);  // Msg is comma seperated, and must end with '\n'          
   
-  UART5_OutString(b2w_cmd);      
+  UART5_OutString(b2w_buf);      
 
   #ifdef DEBUG1
    UART_OutString("B2W: ");
-   UART_OutString(b2w_cmd);         
+   UART_OutString(b2w_buf);         
    UART_OutString("\r\n"); 
   #endif 
 }
@@ -128,42 +110,32 @@ void TM4C_to_MQTT(void){
 //
 // 
 void MQTT_to_TM4C(void) {
-  parse = 0x0;
     
   if ((UART5_FR_R & UART5_FR_RXFE) ==0 ) {  // Check to see if a there is data in the RXD buffer
     input_char =(UART5_DR_R & 0xFF);        // Read the data from the UART
         
       if (input_char != '\n')               // If the incoming character is not a newline then process byte
       {                                     
-        serial_buf[bufpos] = input_char;    // The buffer position in the array get assigned to the current read
-        bufpos++;                           // Once that has happend the buffer advances,doing this over and over
-                                            // again until the end of package marker is read.
-        //UART2_OutChar(input_char);        // Debug only
+        w2b_buf[bufpos] = input_char;     // The buffer position in the array get assigned to the current read
+        bufpos++;                         // Once that has happend the buffer advances,doing this over and over
+                                          // again until the end of package marker is read.
+        #ifdef DEBUG1
+					UART_OutChar(input_char);       // Debug only
+				#endif       
       }
       else if (input_char == '\n')
       {
-        serial_buf[bufpos] = ',';           // Add a comma for strcpy below
-        bufpos++;
-                
-        if (bufpos  > 0) {
-          strcpy(w2b_cmd, strtok(serial_buf, ","));
-          parse = 0x1;                      // Parse incoming data
+        w2b_buf[bufpos] = ',';           // Add a trailing comma
+        bufpos++;       								 // Update bufpos
+        if (bufpos  > 1) {
+					Parser();                      // Call the parser if new data received
         }
-        
-        bufpos = 0;                         // Reset for next string
-        
-        #ifdef DEBUG1
-          UART_OutString("W2B: ");
-          UART_OutString(w2b_cmd);
-          UART_OutString("\r\n");
-        #endif
+        bufpos = 0;                      // Reset for next string	
       } 
       
     else if ((UART5_FR_R & UART5_FR_RXFE) !=0 ) {     // No new data in the RXD buffer -> Exit routine
     }  
   } 
-  
-  if (parse == 0x1) Parser();                         // Call the parser if new Command received
   
 }   // End of routine
 
